@@ -10,6 +10,10 @@
       {
         "url": "http://localhost:8000/",
         "description": "Localhost gateway"
+      },
+      {
+        "url": "https://teeshoppen-backend-27f1a8e8e467.herokuapp.com/",
+        "description": "Production"
       }
     ],
     "components": {
