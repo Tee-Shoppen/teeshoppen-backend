@@ -24,11 +24,8 @@ const swaggerSort = (a, b) => {
   return METHOD_PRIORITY_LIST[a._root.entries[1][1]] - METHOD_PRIORITY_LIST[b._root.entries[1][1]];
 };
 
-  collectionsRouter.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument,
+  collectionsRouter.use('/api-docs', swaggerUi.serveFiles(swaggerDocument), swaggerUi.setup(swaggerDocument,
     { swaggerOptions: { displayRequestDuration: true, operationsSorter: swaggerSort, persistAuthorization: true } }));
-
-
-
 
 
 const verify = (req, res, next) => {
