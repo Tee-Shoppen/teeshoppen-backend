@@ -13,7 +13,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/collections', collectionsRouter);
 
 
-app.listen(8000, function () {
+app.listen(process.env.PORT || 8000, function () {
     creator.createTables();//migration process
     //fetchAllProducts();
     console.log('Listening to Port 8000');
