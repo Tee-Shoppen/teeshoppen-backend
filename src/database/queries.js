@@ -1,10 +1,11 @@
+import dotenv from "dotenv";
 // Import BigQuery module
 import { getBigQueryClient } from "./client.js";
-
+dotenv.config({ path: "./.env" });
 // Create a BigQuery client instance
 const bigquery = getBigQueryClient();
 // Define the dataset ID
-const datasetId = process.env.BIGQUERY_DATASET_ID || 'teeshoppen_tbl';
+const datasetId = process.env.BIGQUERY_DATASET_ID;
 
 // Define BigQuery tables
 const productsTable = bigquery.dataset(datasetId).table('products');
@@ -120,42 +121,37 @@ const insertManyCollections = async (c) => {
 //       throw error; // Re-throw the error for handling by the caller
 //     }
 //   };
-const retrieveProduct = async (p_id) => {
-      const query = `
-      SELECT
-        *
-      FROM
-        ${datasetId}.products
-      WHERE
-        id = ${p_id}
-    `;
+const retrieveProduct = async (req, res, next) => {
+    const query = `
+    SELECT * FROM ${datasetId}.products where id=${req.params.id}`;
 
-    try {
-      // Run the SQL query
-      const [rows] = await bigquery.query(query);
-      const product = rows[0];
-      console.log(product);
+  try {
+    // Run the SQL query
+    const [rows] = await bigquery.query(query);
 
-      return product;
+  //    return product
+      res.send({product:rows});
 
-      // Process the query results
-      // rows.forEach((row: any) => {
-      //   console.log(row);
-      // });
-    } catch (error) {
-      console.error('Error running query:', error);
-    }
+  } catch (error) {
+    console.error('Error running query:', error);
+  }
 }
 
 
 // Function to retrieve a variant by ID
-const retrieveVariant = async (v_id) => {
+const retrieveVariant = async (req,res,next) => {
+  const query = `
+  SELECT * FROM ${datasetId}.variants where id=${req.params.id}`;
+
   try {
-    const [variant] = await variantsTable.get(v_id);
-    return variant;
+    // Run the SQL query
+    const [rows] = await bigquery.query(query);
+
+  //    return product
+      res.send({variant:rows});
+
   } catch (error) {
-    console.error('Error retrieving variant:', error);
-    throw error; // Re-throw the error for handling by the caller
+    console.error('Error running query:', error);
   }
 };
 
@@ -171,35 +167,31 @@ const retrieveInventoryItem = async (i_id) => {
 };
 
 // Function to retrieve a collection by ID
-const retrieveCollection = async (c_id)=> {
-  try {
-    const [collection] = await collectionsTable.get(c_id);
-    return collection;
-  } catch (error) {
-    console.error('Error retrieving collection:', error);
-    throw error; // Re-throw the error for handling by the caller
-  }
+const retrieveCollection = async (req,res,next)=> {
+  const query = `
+  SELECT * FROM ${datasetId}.collections where id=${req.params.id}`;
+
+try {
+  // Run the SQL query
+  const [rows] = await bigquery.query(query);
+
+//    return collection
+    res.send({collection:rows});
+
+} catch (error) {
+  console.error('Error running query:', error);
+}
 };
 
 
 // Function to retrieve many products
-// const retrieveManyProducts = async () => {
-//   try {
-//     const [products] = await productsTable.get();
-//     return products;
-//   } catch (error) {
-//     console.error('Error retrieving many products:', error);
-//     throw error; // Re-throw the error for handling by the caller
-//   }
-// };
 const retrieveManyProducts = async (req, res, next) => {
     const query = `
-    SELECT * FROM ${datasetId}.products limit 2`;
+    SELECT * FROM ${datasetId}.products limit ${req.query.pageSize} offset ${req.query.page}`;
 
   try {
     // Run the SQL query
     const [rows] = await bigquery.query(query);
-    console.log(rows);
 
 //    return product
       res.send({product:rows});
@@ -232,13 +224,19 @@ const retrieveManyInventoryItems = async () => {
 };
 
 // Function to retrieve many collections
-const retrieveManyCollections = async () => {
+const retrieveManyCollections = async (req,res,next) => {
+  const query = `
+  SELECT * FROM ${datasetId}.collections limit ${req.query.pageSize} offset ${req.query.page}`;
+
   try {
-    const [collections] = await collectionsTable.get();
-    return collections;
+    // Run the SQL query
+    const [rows] = await bigquery.query(query);
+
+  //    return collections
+      res.send({collections:rows});
+
   } catch (error) {
-    console.error('Error retrieving many collections:', error);
-    throw error; // Re-throw the error for handling by the caller
+    console.error('Error running query:', error);
   }
 };
 

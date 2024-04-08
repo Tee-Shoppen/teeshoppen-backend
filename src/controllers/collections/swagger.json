@@ -1,0 +1,184 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "description": "Collection service",
+      "version": "1.0.0",
+      "title": "Collections"
+    },
+    
+    "servers": [
+      {
+        "url": "http://localhost:8000/",
+        "description": "Localhost gateway"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "ServerKeyAuth": {
+          "type": "apiKey",
+          "in": "header",
+          "name": "x-server"
+        }
+      },
+      "responses": {
+        "ServerUnauthorized": {
+          "description": "X-Server-Key is missing",
+          "content": {
+            "application/json":{
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "schemas": {
+        "Collections": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Internal ID",
+              "example": 1
+            },
+            "title": {
+              "type": "string",
+              "description": "title",
+              "example": "Men - VIP - September"
+            },
+            "webshop": {
+              "type": "string",
+              "description": "webshop",
+              "example": "teeshoppen-uk"
+            },
+            "handle": {
+              "type": "string",
+              "description": "handle",
+              "example": "men-vip-september",
+              "nullable": true
+            },
+            "body_html": {
+              "type": "string",
+              "description": "Collection description",
+              "example": "This is a collection",
+              "nullable": true
+            },
+            "sort_order": {
+              "type": "string",
+              "description": "sort_order",
+              "example": "best-selling",
+              "nullable": true
+            },
+            "publishedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Collection created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Collection updated ISO timestamp",
+              "example": "2021-04-04T09:30:13.392Z"
+            },
+            "admin_graphql_api_id": {
+              "type": "string",
+              "description": "admin_graphql_api_id",
+              "example": "gid://shopify/Collection/411754496224",
+              "nullable": true
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "/api/collections/": {
+        "get": {
+          "tags": ["GET"],
+          "summary": "Get the list of collections",
+          "parameters": [
+            {
+                "in": "query",
+                "name": "page",
+                "description": "page",
+                "example": 1
+              },
+              {
+                "in": "query",
+                "name": "pageSize",
+                "description": "pageSize",
+                "example": 10
+              }
+          ],
+          "security": [{"ServerKeyAuth":  []}],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "total_count": {
+                        "type": "integer",
+                        "description": "Total number of collections matching the filter"
+                      },
+                      "collections": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Collections"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/collections/{id}": {
+        "get": {
+          "tags": ["GET"],
+          "summary": "Get a collection's details",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "id",
+              "example": 411754496224
+            }
+          ],
+          "security": [{"ServerKeyAuth":  []}],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "collection": {
+                        "$ref": "#/components/schemas/Collections"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

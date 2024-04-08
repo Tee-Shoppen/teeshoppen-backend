@@ -1,0 +1,451 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "description": "Product service",
+      "version": "1.0.0",
+      "title": "Product"
+    },
+    
+    "servers": [
+      {
+        "url": "http://localhost:8000/",
+        "description": "Localhost gateway"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "ServerKeyAuth": {
+          "type": "apiKey",
+          "in": "header",
+          "name": "x-server"
+        }
+      },
+      "responses": {
+        "ServerUnauthorized": {
+          "description": "X-Server-Key is missing",
+          "content": {
+            "application/json":{
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "schemas": {
+        "Variant": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Internal ID",
+              "example": 56821,
+              "readOnly": true
+            },
+            "productId": {
+              "type": "integer",
+              "description": "Internal Parent Product's ID",
+              "example": 11842,
+              "readOnly": true
+            },
+            "shopifyId": {
+              "type": "string",
+              "description": "Shopify ID",
+              "example": "34820108976280",
+              "nullable": true,
+              "readOnly": true
+            },
+            "title": {
+              "type": "string",
+              "description": "Variant Title",
+              "example": "Class Shirt"
+            },
+            "hsCode": {
+              "type": "string",
+              "description": "HS CODE",
+              "example": "080810"
+            },
+            "barCode": {
+              "type": "string",
+              "description": "Bar CODE",
+              "example": ""
+            },
+            "sku": {
+              "type": "string"
+            },
+            "sourceUrl": {
+              "type": "string",
+              "description": "The URL source of any custom products"
+            },
+            "options": {
+              "type": "array",
+              "description": "The product option of this variant (if product has options), up to a maximum of 3",
+              "maxItems": 3,
+              "items": {
+                "type": "string"
+              },
+              "example": ["Red", "L"]
+            },
+            "price": {
+              "type": "string",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "description": "Price of this variant",
+              "example": "14.99"
+            },
+            "currency": {
+              "type": "string",
+              "example": "USD",
+              "readOnly": true
+            },
+            "weight": {
+              "type": "string",
+              "description": "The weight of this product, in kg",
+              "example": "0.052"
+            },
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "Media URL"
+              }
+            },
+            "compareAtPrice": {
+              "type": "string",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": "14.99"
+            },
+            "costPrice": {
+              "type": "string",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": "14.99"
+            },
+            "trackQuantity": {
+              "type": "string",
+              "minimum": 0,
+              "example": "1"
+            },
+            "continueSellingOos": {
+              "type": "boolean",
+              "example": false
+            },
+            "inventoryStock": {
+              "type": "boolean",
+              "example": false
+            },
+            "physicalProduct": {
+              "type": "boolean",
+              "example": true
+            },
+            "preOrderShipDateText": {
+              "type": "string",
+              "description": "Product variant preorder ship date",
+              "example" : "January 01,2023"
+            },
+            "preOrderStartDate": {
+              "type": "date",
+              "description": "Product variant preoder start date",
+              "example" : "2023-01-01T02:06:36.000Z" 
+            },
+            "preOrderEndDate": {
+              "type": "date",
+              "description": "Product variant preoder end date",
+              "example" : "2023-01-01T02:06:36.000Z" 
+            },
+            "materials": {
+              "type": "string",
+              "example": "sample material"
+            },
+            "size": {
+              "type": "string",
+              "example": "Small"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Product created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Product updated ISO timestamp",
+              "example": "2021-04-04T09:30:13.392Z",
+              "readOnly": true
+            },
+            "deletedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Product deleted ISO timestamp",
+              "example": "2021-04-04T09:50:13.392Z",
+              "readOnly": true
+            }
+          }
+        },
+        "Product": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Internal ID",
+              "example": 1
+            },
+            "title": {
+              "type": "string",
+              "description": "Product title",
+              "example": "Shirt"
+            },
+            "shopifyId": {
+              "type": "string",
+              "description": "Shopify ID",
+              "example": "45861764532",
+              "nullable": true
+            },
+            "optionOne": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Product Options",
+              "example": "Size",
+              "nullable": true
+            },
+            "optionTwo": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Product Options",
+              "example": "Color",
+              "nullable": true
+            },
+            "optionThree": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Product Options",
+              "example": null,
+              "nullable": true
+            },
+            "optionOneChoices": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Product Options",
+              "example": ["S", "M"],
+              "nullable": true
+            },
+            "optionTwoChoices": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Product Options",
+              "example": ["Red", "Blue"],
+              "nullable": true
+            },
+            "optionThreeChoices": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Product Options",
+              "example": null,
+              "nullable": true
+            },
+            "vendor": {
+              "type": "string",
+              "description": "Product Vendor",
+              "example": "Primark",
+              "nullable": true
+            },
+            "type": {
+              "type": "string",
+              "description": "Product type",
+              "example": "Clothing",
+              "nullable": true
+            },
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "Media URL"
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Product created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Product updated ISO timestamp",
+              "example": "2021-04-04T09:30:13.392Z"
+            },
+            "deletedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Product deleted ISO timestamp",
+              "example": "2021-04-04T09:50:13.392Z"
+            },
+            "variants": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Variant"
+              }
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "/api/products/": {
+        "get": {
+          "tags": ["GET"],
+          "summary": "Get the list of products",
+          "parameters": [
+            {
+                "in": "query",
+                "name": "page",
+                "description": "page",
+                "example": 1
+              },
+              {
+                "in": "query",
+                "name": "pageSize",
+                "description": "pageSize",
+                "example": 10
+              }
+          ],
+          "security": [{"ServerKeyAuth":  []}],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "total_count": {
+                        "type": "integer",
+                        "description": "Total number of products matching the filter"
+                      },
+                      "products": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Product"
+                        }
+                      },
+                      "stats": {
+                        "type": "object",
+                        "properties": {
+                          "activeProducts": {
+                            "type": "integer",
+                            "description": "Total number of active products"
+                          },
+                          "deletedProducts": {
+                            "type": "integer",
+                            "description": "Total number of deleted products"
+                          },
+                          "productsOnShopify": {
+                            "type": "integer",
+                            "description": "Total number of products listed on shopify"
+                          },
+                          "productsPublishedOnShopify": {
+                            "type": "integer",
+                            "description": "Total number of products published on shopify"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/products/{id}": {
+        "get": {
+          "tags": ["GET"],
+          "summary": "Get a product's details",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "id",
+              "example": 7938554855648
+            }
+          ],
+          "security": [{"ServerKeyAuth":  []}],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "product": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/products/variant/{id}": {
+        "get": {
+          "tags": ["GET"],
+          "summary": "Get a product variant's details",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "id",
+              "example": 42927559344352
+            }
+          ],
+          "security": [{"ServerKeyAuth":  []}],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "variant": {
+                        "$ref": "#/components/schemas/Variant"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

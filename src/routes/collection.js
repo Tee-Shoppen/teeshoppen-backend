@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
 import { catchAsync } from '../controllers/utilities/utils.js';
-import productCreation from '../controllers/products/create.js';
-import { retrieveManyProducts, retrieveProduct, retrieveVariant } from '../database/queries.js';
+import collectionCreation from "../controllers/collections/create.js";
+import { retrieveCollection, retrieveManyCollections } from '../database/queries.js';
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from '../controllers/products/swagger.json' assert { type: "json" };
+import swaggerDocument from '../controllers/collections/swagger.json' assert { type: "json" };
 import express from 'express';
 
 dotenv.config({ path: "./.env" });
-const productsRouter = express.Router();
+const collectionsRouter = express.Router();
 
 /**
  * Swagger Documentation
@@ -25,7 +25,7 @@ const swaggerSort = (a, b) => {
 };
 
 if (process.env.NODE_ENV === 'development') {
-  productsRouter.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument,
+  collectionsRouter.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument,
     { swaggerOptions: { displayRequestDuration: true, operationsSorter: swaggerSort, persistAuthorization: true } }));
 }
 
@@ -39,14 +39,11 @@ const verify = (req, res, next) => {
   };
 
 //products
-productsRouter.get('/', verify,catchAsync(retrieveManyProducts));
-productsRouter.get('/:id', verify, catchAsync(retrieveProduct));
+collectionsRouter.get('/', verify,catchAsync(retrieveManyCollections));
+collectionsRouter.get('/:id', verify, catchAsync(retrieveCollection));
 //
-productsRouter.post('/create', verify, catchAsync(productCreation));
+collectionsRouter.post('/create', verify, catchAsync(collectionCreation));
 
 
-//variants
-productsRouter.get('/variant/:id', verify, catchAsync(retrieveVariant));
 
-
-export default productsRouter;
+export default collectionsRouter;

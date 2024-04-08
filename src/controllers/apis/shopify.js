@@ -16,59 +16,59 @@ export default class Shopify extends Apis {
 
   // products
   retrieveProducts(params) {
-    return this.api.get<{ products}>('/products.json', { params })
+    return this.api.get('/products.json', { params })
   }
 
   retrieveSingleProduct(product_id, params) {
-    return this.api.get<{ product }>(`/products/${product_id}.json`, { params })
+    return this.api.get(`/products/${product_id}.json`, { params })
   }
 
-  retrieveProductsCount(ParamsRetrieveCollections) {
-    return this.api.get<{ count }>('/products/count.json', { params })
+  retrieveProductsCount(params) {
+    return this.api.get('/products/count.json', { params })
   }
 
   updateProduct(product_id, data) {
-    return this.api.put<{ product}>(`/products/${product_id}.json`, { product: { id: product_id, ...data } })
+    return this.api.put(`/products/${product_id}.json`, { product: { id: product_id, ...data } })
   }
 
   // variants
   retrieveVariantsOfProduct(product_id, params) {
-    return this.api.get<{ variants }>(`/products/${product_id}/variants.json`, { params })
+    return this.api.get(`/products/${product_id}/variants.json`, { params })
   }
 
   retrieveSingleVariant(variant_id, params) {
-    return this.api.get<{ variant}>(`/variants/${variant_id}.json`, { params })
+    return this.api.get(`/variants/${variant_id}.json`, { params })
   }
 
   retrieveVariantsCount(product_id) {
-    return this.api.get<{ count }>(`/products/${product_id}/variants/count.json`)
+    return this.api.get(`/products/${product_id}/variants/count.json`)
   }
 
   // inventory items
   retrieveInventoryItems(params) {
-    return this.api.get<{ inventory_items }>('/inventory_items.json', { params })
+    return this.api.get('/inventory_items.json', { params })
   }
 
   // collects
   retrieveCollects(params) {
-    return this.api.get<{ collects}>('/collects.json', { params })
+    return this.api.get('/collects.json', { params })
   }
 
   retrieveSingleCollect(collect_id, params) {
-    return this.api.get<{ collect}>(`/collects/${collect_id}.json`, { params })
+    return this.api.get(`/collects/${collect_id}.json`, { params })
   }
 
   retrieveCollectsCount(params) {
-    return this.api.get<{ count }>('/collects/count.json', { params })
+    return this.api.get('/collects/count.json', { params })
   }
 
   // collection
   retrieveCollectionsOfProducts(collection_id, params) {
-    return this.api.get<{ products}>(`/collections/${collection_id}/products.json`, { params })
+    return this.api.get(`/collections/${collection_id}/products.json`, { params })
   }
 
   retrieveSingleCollection(collection_id, params) {
-    return this.api.get<{ collection }>(`/collections/${collection_id}.json`, { params })
+    return this.api.get(`/collections/${collection_id}.json`, { params })
   }
 }
 
