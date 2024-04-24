@@ -37,7 +37,7 @@ const shopifyWebhook = async (req, res, next) => {
             }
        
     }
-    case 'orders/update': {
+    case 'orders/updated': {
       console.log("TRACE orders/update webhook starts");
       res.sendStatus(200);
             try {
@@ -54,6 +54,7 @@ const shopifyWebhook = async (req, res, next) => {
       }
     default:
     console.log('shopify-webhook', `Unexpected topic ${topic}`, 2);
+    return;
   }
 }
 
