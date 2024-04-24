@@ -539,5 +539,432 @@ export default {
     name: 'admin_graphql_api_id',
     type: 'STRING',
     required: true
-  }]
+  }],
+  order_line_items_schema: [
+      {
+        "name": "id",
+        "type": "INT64",
+        "required": true
+      },
+      {
+        "name": "orderId",
+        "type": "INT64",
+        "required": true
+      },
+      {
+        "name": "productId",
+        "type": "INT64",
+        "required": false
+      },
+      {
+        "name": "productTitle",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "productVariantId",
+        "type": "INT64",
+        "required": false
+      },
+      {
+        "name": "productVariantTitle",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "quantity",
+        "type": "INT64",
+        "required": true
+      },
+      {
+        "name": "discounts",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "duties",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "tax",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "price",
+        "type": "FLOAT64",
+        "required": true
+      },
+      {
+        "name": "currency",
+        "type": "STRING",
+        "required": true
+      },
+      {
+        "name": "discountAllocations",
+        "type": 'JSON',
+        "required" : false
+      },
+      {
+        "name": "discountApplications",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "discountCodes",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "fulfillableQuantity",
+        "type": "INT64",
+        "required": false
+      },
+      {
+        "name": "fulfillmentService",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "fulfillmentStatus",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "weight",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "weightUnit",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "status",
+        "type": "STRING",
+        "required": true,
+        "default": "pending purchase"
+      },
+      {
+        "name": "conversionRate",
+        "type": "STRING",
+        "required": true,
+        "default": "1030"
+      },
+      {
+        "name": 'createdAt',
+        "type": 'TIMESTAMP',
+        "mode": 'REQUIRED',
+        "description": 'Timestamp when the line item item was created'
+      },
+      {
+        "name": 'updatedAt',
+        "type": 'TIMESTAMP',
+        "mode": 'REQUIRED',
+        "description": 'Timestamp when the line item item was updated'
+      },
+      {
+        "name": 'shopifyId',
+        "type": 'string',
+        "mode": 'REQUIRED',
+        "description": ''
+      },
+  ],
+  orders_schema:[
+      {
+        "name": "shopifyId",
+        "type": "INT64",
+        "required": true
+      },
+      {
+        "name": "addressDistrict",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "billingDistrict",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "customerEmail",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "customerPhone",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "customerFirstName",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "customerLastName",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "note",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "noteAttributes",
+        "type": "STRING",  // Store JSON as STRING in BigQuery
+        "required": false
+      },
+      {
+        "name": "financialStatus",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "paymentStatus",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "currency",
+        "type": "STRING",
+        "required": true
+      },
+      {
+        "name": "totalDiscounts",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "totalDuties",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "totalTax",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "subtotalPrice",
+        "type": "FLOAT64",
+        "required": false
+      },
+      {
+        "name": "totalPrice",
+        "type": "FLOAT64",
+        "required": true
+      },
+      {
+        "name": "totalOutstanding",
+        "type": "FLOAT64",
+        "required": true
+      },
+      {
+        "name": 'createdAt',
+        "type": 'TIMESTAMP',
+        "mode": 'REQUIRED',
+        "description": 'Timestamp when the inventory item was created'
+      },
+      {
+        "name": 'updatedAt',
+        "type": 'TIMESTAMP',
+        "mode": 'REQUIRED',
+        "description": 'Timestamp when the inventory item was updated'
+      },
+      {
+        "name": 'deletedAt',
+        "type": 'TIMESTAMP',
+        "required": false,
+        "description": 'Timestamp when the inventory item was updated'
+      },
+      {
+        "name": "closedAt",
+        "type": "TIMESTAMP",
+        "required": false
+      },
+      {
+        "name": "confirmedAt",
+        "type": "TIMESTAMP",
+        "required": false
+      },
+      {
+        "name": "cancelledAt",
+        "type": "TIMESTAMP",
+        "required": false
+      },
+      {
+        "name": "cancelledReason",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "addressFirstName",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "addressLastName",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "addressPhone",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "addressLineOne",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "addressLineTwo",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "addressCity",
+        "type": "STRING",
+        "required": false
+      },
+      {
+        "name": "addressProvince",
+        "type": "STRING",
+        "required": false
+      },
+    {
+      "name": 'addressCountry',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'addressZip',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'billingFirstName',
+      "type": 'STRING',
+      "required": true,
+    },
+    {
+      "name": 'billingLastName',
+      "type": 'STRING',
+      "required": true,
+    },
+    {
+      "name": 'billingPhone',
+      "type": 'STRING',
+      "required": false, // Adjust based on your requirements
+    },
+    {
+      "name": 'billingAddressLineOne',
+      "type": 'STRING',
+      "required": true,
+    },
+    {
+      "name": 'billingAddressLineTwo',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'billingAddressCity',
+      "type": 'STRING',
+      "required": true,
+    },
+    {
+      "name": 'billingAddressProvince',
+      "type": 'STRING',
+      "required": false, // Adjust based on your requirements
+    },
+    {
+      "name": 'billingAddressCountry',
+      "type": 'STRING',
+      "required": true,
+    },
+    {
+      "name": 'billingAddressZip',
+      "type": 'STRING',
+      "required": true,
+    },
+    {
+      "name": 'billingCompany',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'companyName',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'discountApplications',
+      "type": 'STRING', // Assuming JSON for discount information
+      "required": false,
+    },
+    {
+      "name": 'discountCodes',
+      "type": 'JSON', // Assuming JSON for discount codes
+      "required": false,
+    },
+    {
+      "name": 'fulfillmentStatus',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'fulfillmentId',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'tags',
+      "type": 'STRING', 
+      "required": false,
+    },
+    {
+      "name": 'status',
+      "type": 'STRING',
+      "required": true,
+    },
+    {
+      "name": 'orderNumber',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'source',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'webshop',
+      "type": 'STRING',
+      "required": true
+    },
+    {
+      "name": 'priority',
+      "type": 'INTEGER',
+      "required": false, // Might be required depending on your logic
+    },
+    {
+      "name": 'shopifyShippingLine',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'trackingNumber',
+      "type": 'STRING',
+      "required": false,
+    },
+    {
+      "name": 'sourceURL',
+      "type": 'STRING',
+      "required": false,
+    }
+  ]
 };

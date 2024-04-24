@@ -27,6 +27,18 @@ export default class Shopify extends Apis {
     return this.api.get('/products/count.json', { params })
   }
 
+  retrieveOrdersCount(params) {
+    return this.api.get('/orders/count.json', { params })
+  }
+
+  retrieveOrders(params) {
+    return this.api.get('/orders.json', { params })
+  }
+
+  retrieveSingleOrder(order_id, params) {
+    return this.api.get(`/orders/${order_id}.json`, { params })
+  }
+
   updateProduct(product_id, data) {
     return this.api.put(`/products/${product_id}.json`, { product: { id: product_id, ...data } })
   }

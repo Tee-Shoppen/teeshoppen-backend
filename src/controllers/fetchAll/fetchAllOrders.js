@@ -1,4 +1,4 @@
-import {all} from './migration.js'
+import initializeOrders from '../orders/initialize-orders.js';
 
 const stores = [
         // 'teeshoppen-pl',
@@ -15,11 +15,12 @@ const stores = [
         // 'femalefashionstore-dk',
       ]
       
-const fetchAllProducts = async () => {
+const fetchAllOrders = async (req,res,next) => {
+    res.sendStatus(200);
     for (const store of stores){
         console.log('fetching for ', store);
-        await all(store);
+        await initializeOrders(store);
     }
 }
 
-export default fetchAllProducts;
+export default fetchAllOrders;

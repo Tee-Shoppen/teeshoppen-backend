@@ -42,6 +42,15 @@ class BigQueryMigration {
         tableId: 'inventory_items',
         schema: schemas.inventory_items_schema,
       },
+      {
+        tableId: 'order_line_items',
+        schema: schemas.order_line_items_schema,
+      },
+      {
+        tableId: 'orders',
+        schema: schemas.orders_schema,
+      },
+      
       // Add more table objects as needed
     ];
   }

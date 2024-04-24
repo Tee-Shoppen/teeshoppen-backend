@@ -4,9 +4,14 @@ import {
   insertManyCollections,
   insertManyProducts,
   insertManyVariants,
+  insertOrder,
+  insertOrderLineItem,
+  insertManyOrders,
+  insertManyOrderLineItems,
   insertManyInventoryitems,
 } from '../../database/queries.js'
 import { subDomainMap } from '../utilities/shop-mapper.js'
+import createOrderModel from '../orders/create-order.js'
 import dotenv from "dotenv";
 
 dotenv.config({ path: "./.env" });
@@ -101,6 +106,25 @@ const downloadProducts = async (shopify , progressBar) => {
 
   return productsDownloaded
 }
+
+const downloadOrders = async (shopify , progressBar) => {
+    const { count: ordersCount } = (await shopify.retrieveOrdersCount()).data
+    const ordersDownloaded = []
+  
+    const params = { page_info: undefined, limit: 250 }
+    progressBar.start(ordersCount, 0)
+  
+    do {
+      const { data, headers } = await shopify.retrieveOrders(params)
+      const { orders } = data
+      ordersDownloaded.push(...orders)
+      params.page_info = getPageInfo(headers.link)
+      progressBar.update(ordersDownloaded.length)
+    } while (params.page_info)
+    progressBar.stop()
+  
+    return ordersDownloaded
+  }
 
 const downloadCollects = async (shopify, progressBar) => {
   const { count: collectsCount } = (await shopify.retrieveCollectsCount()).data
@@ -259,6 +283,22 @@ const parseCollectionsToDatabase = (webshop, collectionsDownloaded) => {
   }
 }
 
+// Parse to Database
+const parseOrdersToDatabase = async (webshop, ordersDownloaded) => {
+
+    return{
+        orders :  await ordersDownloaded.map(async order => {
+               await createOrderModel(order,webshop)
+        
+        }),
+        orderLineItems : await ordersDownloaded.map(async order => {
+            let li = await createOrderModel(order,webshop)
+            li.lineItems
+        }),
+    }
+
+  }
+
 // Migration
 const all = async (subDomain) => {
   // initialize
@@ -276,19 +316,27 @@ const all = async (subDomain) => {
   const b1collections = createProgressBar(capitalize(`Downloaded ${country} Collections`)).single
   const collectionsDownloaded = await downloadCollections(collectsDownloaded, shopify, b1collections)
 
+//   const b1Orders = createProgressBar(capitalize(`Downloaded ${country} Orders`)).single
+//   const ordersDownloaded = await downloadOrders(shopify, b1Orders)
+
   // Parse
   const { products: toDatabaseProducts, variants: toDatabaseVariants } = parseProductsToDatabase(name, productsDownloaded)
   const { collections: toDatabaseCollections } = parseCollectionsToDatabase(name, collectionsDownloaded)
+  //const { orders: toDatabaseOrders, orderLineItems: toDatabaseOrderLineItems } = await parseOrdersToDatabase(name, ordersDownloaded)
 
   // Insert
   const insertProgressBar = createProgressBar(capitalize(`Inserted ${country} Products`)).multiple
   const b2products = insertProgressBar.create(toDatabaseProducts.length, 0)
   const b2variants = insertProgressBar.create(toDatabaseVariants.length, 0)
   const b2collections = insertProgressBar.create(toDatabaseCollections.length, 0)
+//   const b2orders = insertProgressBar.create(toDatabaseOrders.length, 0)
+//   const b2orderlineitems = insertProgressBar.create(toDatabaseOrderLineItems.length, 0)
 
   let counterInsertProducts = 0
   let counterInsertVariants = 0
   let counterInsertCollections = 0
+  let counterInsertOrders = 0
+  let counterInsertOrderLineItems = 0
 
   const insertProductsPromise = insertMany(toDatabaseProducts, async (batch) => {
     await insertManyProducts(batch).then((p) => {
@@ -317,8 +365,25 @@ const all = async (subDomain) => {
     })
   })
 
-  await Promise.all([insertProductsPromise, insertVariantsPromise,insertCollectionsPromise])
+//   const insertOrdersPromise = insertMany(toDatabaseOrders, async (batch) => {
+//     await insertManyOrders(batch).then((p) => {
+//       // counterInsertProducts += p.rowsAffected
+//       // b2products.update(counterInsertProducts, {
+//       //   title: 'Insert Products',
+//       // })
+//     })
+//   })
 
+//   const insertOrderLineItemsPromise = insertMany(toDatabaseOrderLineItems, async (batch) => {
+//     await insertManyVariants(batch).then((v) => {
+//       // counterInsertVariants += v.rowsAffected
+//       // b2variants.update(counterInsertVariants, {
+//       //   title: 'Insert Variants',
+//       // })
+//     })
+//   })
+
+  await Promise.all([insertProductsPromise, insertVariantsPromise,insertCollectionsPromise])
   insertProgressBar.stop()
   console.log('Migration completed.')
 }

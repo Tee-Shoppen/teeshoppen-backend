@@ -1,0 +1,2204 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "description": "Order service",
+      "version": "1.0.0",
+      "title": "Order"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8000",
+        "description": "Localhost gateway"
+      },
+      {
+        "url": "https://teeshoppen-backend-27f1a8e8e467.herokuapp.com/",
+        "description": "Production"
+      }
+    ],
+    "components": {
+     "securitySchemes": {
+            "ServerKeyAuth": {
+              "type": "apiKey",
+              "in": "header",
+              "name": "x-server"
+            }
+          },
+      "responses": {
+        "ServerUnauthorized": {
+          "description": "X-Server-Key is missing",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Unauthorized"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "schemas": {
+        "Order": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Internal ID",
+              "example": 1
+            },
+            "customerEmail": {
+              "type": "string"
+            },
+            "customerPhone": {
+              "type": "string"
+            },
+            "customerFirstName": {
+              "type": "string"
+            },
+            "customerLastName": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "financialStatus": {
+              "type": "string"
+            },
+            "currency": {
+              "type": "string"
+            },
+            "totalDiscounts": {
+              "type": "string"
+            },
+            "totalDuties": {
+              "type": "string"
+            },
+            "totalTax": {
+              "type": "string"
+            },
+            "subtotalPrice": {
+              "type": "string"
+            },
+            "totalPrice": {
+              "type": "string"
+            },
+            "totalOutstanding": {
+              "type": "string"
+            },
+            "closedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "confirmedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "cancelledAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Product created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z",
+              "nullable": true
+            },
+            "cancelledReason": {
+              "type": "string",
+              "nullable": true
+            },
+            "addressFirstName": {
+              "type": "string"
+            },
+            "addressLastName": {
+              "type": "string"
+            },
+            "addressPhone": {
+              "type": "string"
+            },
+            "addressLineOne": {
+              "type": "string"
+            },
+            "addressLineTwo": {
+              "type": "string"
+            },
+            "addressCity": {
+              "type": "string"
+            },
+            "addressProvince": {
+              "type": "string"
+            },
+            "addressCountry": {
+              "type": "string"
+            },
+            "addressZip": {
+              "type": "string"
+            },
+            "billingFirstName": {
+              "type": "string"
+            },
+            "billingLastName": {
+              "type": "string"
+            },
+            "billingPhone": {
+              "type": "string"
+            },
+            "billingAddressLineOne": {
+              "type": "string"
+            },
+            "billingAddressLineTwo": {
+              "type": "string"
+            },
+            "billingAddressCity": {
+              "type": "string"
+            },
+            "billingAddressProvince": {
+              "type": "string"
+            },
+            "billingAddressCountry": {
+              "type": "string"
+            },
+            "billingAddressZip": {
+              "type": "string"
+            },
+            "fulfillmentStatus": {
+              "type": "string"
+            },
+            "tags": {
+              "description": "Order tags",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "Clothing"
+              ],
+              "nullable": true
+            },
+            "combinedOrders": {
+              "description": "Combined Orders",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                1,
+                28,
+                56
+              ],
+              "nullable": true
+            },
+            "status": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "orderNumber":{
+              "type":"string"
+            },
+            "priority": {
+              "type": "string"
+            },
+            "shopifyShippingLine": {
+              "type": "string"
+            },
+            "trackingNumber": {
+              "type": "string",
+              "example": "23987462"
+            },
+            "shopifyId": {
+              "type": "string",
+              "description": "Shopify ID",
+              "example": "45861764532",
+              "nullable": true
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order updated ISO timestamp",
+              "example": "2021-04-04T09:30:13.392Z"
+            },
+            "deletedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order deleted ISO timestamp",
+              "example": "2021-07-04T09:30:13.392Z"
+            }
+          }
+        },
+        "PossibleCombineOrders": {
+          "type": "object",
+          "properties": {
+            "customerEmail": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string",
+              "example" :  [
+                1,
+                7,
+                8
+              ]
+            }
+          }
+        },
+        "Statistics": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "order_count": {
+              "type": "integer"
+            },
+            "shipped": {
+              "type": "integer"
+            },
+            "packed": {
+              "type": "integer"
+            },
+            "highrisk": {
+              "type": "integer"
+            }
+          }
+        },
+        "OrderWithLineItems": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Internal ID",
+              "example": 1
+            },
+            "customerEmail": {
+              "type": "string"
+            },
+            "customerPhone": {
+              "type": "string"
+            },
+            "customerFirstName": {
+              "type": "string"
+            },
+            "customerLastName": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "financialStatus": {
+              "type": "string"
+            },
+            "currency": {
+              "type": "string"
+            },
+            "totalDiscounts": {
+              "type": "string"
+            },
+            "totalDuties": {
+              "type": "string"
+            },
+            "totalTax": {
+              "type": "string"
+            },
+            "subtotalPrice": {
+              "type": "string"
+            },
+            "totalPrice": {
+              "type": "string"
+            },
+            "totalOutstanding": {
+              "type": "string"
+            },
+            "cancelledAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Product created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z",
+              "nullable": true
+            },
+            "cancelledReason": {
+              "type": "string",
+              "nullable": true
+            },
+            "addressFirstName": {
+              "type": "string"
+            },
+            "addressLastName": {
+              "type": "string"
+            },
+            "addressPhone": {
+              "type": "string"
+            },
+            "addressLineOne": {
+              "type": "string"
+            },
+            "addressLineTwo": {
+              "type": "string"
+            },
+            "addressCity": {
+              "type": "string"
+            },
+            "addressProvince": {
+              "type": "string"
+            },
+            "addressCountry": {
+              "type": "string"
+            },
+            "addressZip": {
+              "type": "string"
+            },
+            "billingFirstName": {
+              "type": "string"
+            },
+            "billingLastName": {
+              "type": "string"
+            },
+            "billingPhone": {
+              "type": "string"
+            },
+            "billingAddressLineOne": {
+              "type": "string"
+            },
+            "billingAddressLineTwo": {
+              "type": "string"
+            },
+            "billingAddressCity": {
+              "type": "string"
+            },
+            "billingAddressProvince": {
+              "type": "string"
+            },
+            "billingAddressCountry": {
+              "type": "string"
+            },
+            "billingAddressZip": {
+              "type": "string"
+            },
+            "fulfillmentStatus": {
+              "type": "string"
+            },
+            "shopifyId": {
+              "type": "string",
+              "description": "Shopify ID",
+              "example": "45861764532",
+              "nullable": true
+            },
+            "tags": {
+              "description": "Order tags",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "Clothing"
+              ],
+              "nullable": true
+            },
+            "type": {
+              "type": "string",
+              "description": "Order type",
+              "example": "Clothing",
+              "nullable": true
+            },
+            "closedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order updated ISO timestamp",
+              "example": "2021-04-04T09:30:13.392Z"
+            },
+            "lineItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Internal ID",
+                    "example": 1
+                  },
+                  "variant": {
+                    "type": "object",
+                    "description": "Product variant"
+                  },
+                  "customProductName": {
+                    "type": "string",
+                    "description": "Name of the product"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Quantity ordered",
+                    "example": 10
+                  },
+                  "discounts": {
+                    "type": "string"
+                  },
+                  "duties": {
+                    "type": "string"
+                  },
+                  "tax": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "fulfillableQuantity": {
+                    "type": "string"
+                  },
+                  "fulfillmentService": {
+                    "type": "string"
+                  },
+                  "weight": {
+                    "type": "string",
+                    "example": "400.00"
+                  },
+                  "weightUnit": {
+                    "type": "string",
+                    "example": "grams"
+                  },
+                  "shopifyId": {
+                    "type": "string",
+                    "description": "Shopify ID",
+                    "example": "45861764532",
+                    "nullable": true
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+                    "description": "Order created ISO timestamp",
+                    "example": "2020-06-18T02:06:36.000Z"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+                    "description": "Order updated ISO timestamp",
+                    "example": "2021-04-04T09:30:13.392Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "DraftOrder": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Internal ID",
+              "example": 1
+            },
+            "customerName": {
+              "type": "string"
+            },
+            "customerEmail": {
+              "type": "string"
+            },
+            "customerPhone": {
+              "type": "string"
+            },
+            "customerCountry": {
+              "type": "string"
+            },
+            "shippingMethod": {
+              "type": "string"
+            },
+            "estimatedWeight": {
+              "type": "string"
+            },
+            "bungjangEstimate": {
+              "type": "string"
+            },
+            "totalEstimate": {
+              "type": "string"
+            },
+            "totalEstimateShown": {
+              "type": "string"
+            },
+            "shippingAddress": {
+              "type": "string"
+            },
+            "shippingPhone": {
+              "type": "string"
+            },
+            "deliveryAddress": {
+              "type": "string"
+            },
+            "deliveryPhone": {
+              "type": "string"
+            },
+            "tags": {
+              "description": "Draft order tags",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "Clothing"
+              ],
+              "nullable": true
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order updated ISO timestamp",
+              "example": "2021-04-04T09:30:13.392Z"
+            }
+          }
+        },
+        "DraftOrderWithLineItems": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Internal ID",
+              "example": 1
+            },
+            "customerName": {
+              "type": "string"
+            },
+            "customerEmail": {
+              "type": "string"
+            },
+            "customerCountry": {
+              "type": "string"
+            },
+            "shippingMethod": {
+              "type": "string"
+            },
+            "estimatedWeight": {
+              "type": "string"
+            },
+            "bungjangEstimate": {
+              "type": "string"
+            },
+            "totalEstimate": {
+              "type": "string"
+            },
+            "totalEstimateShown": {
+              "type": "string"
+            },
+            "tags": {
+              "description": "Draft order tags",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "Clothing"
+              ],
+              "nullable": true
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order created ISO timestamp",
+              "example": "2020-06-18T02:06:36.000Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+              "description": "Order updated ISO timestamp",
+              "example": "2021-04-04T09:30:13.392Z"
+            },
+            "lineItems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "productLink": {
+                    "type": "string",
+                    "description": "Link to the product"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Quantity ordered",
+                    "example": 10
+                  },
+                  "price": {
+                    "type": "string"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "secondHand": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "/api/orders/list": {
+        "get": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Get a list of existing orders",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "page",
+              "description": "Page number",
+              "example": 1
+            },
+            {
+              "in": "query",
+              "name": "pageSize",
+              "description": "Page Size",
+              "example": 10
+            },
+            {
+              "in": "query",
+              "name": "includeLineItems",
+              "description": "Whether or not to include line items",
+              "example": true
+            },
+            {
+              "in": "query",
+              "name": "combinedOrders",
+              "description": "Whether or not display possible combined orders",
+              "example": false
+            },
+            {
+              "in": "query",
+              "name": "filter",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "lineItems.productId_in=[1]"
+                }
+              },
+              "description": "Filters to apply. fieldName_compare=value where compare is one of [eq,ne,gt,gte,lt,lte,is,not,like,notLike,iLike,notILike]. Input value can be no quote, enclosed with double quote or single quote"
+            },
+            {
+              "in": "query",
+              "name": "sort",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "updatedAt_desc"
+                }
+              },
+              "description": "Sort order to apply. fieldName_asc or fieldName_desc"
+            },
+            {
+              "in": "query",
+              "name": "fields",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "id"
+                }
+              },
+              "description": "Fields to retrieve"
+            },
+            {
+              "in": "query",
+              "name": "lineItemsFields",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "id"
+                }
+              },
+              "description": "OrderLineItems fields to retrieve"
+            },
+            {
+              "in": "query",
+              "name": "groupByProductId",
+              "type": "boolean",
+              "example": false
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "totalCount": {
+                        "type": "integer",
+                        "description": "Total number of orders"
+                      },
+                      "orders": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Order"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/list-orders-containing-variant/{id}": {
+        "get": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Get a list of existing orders containing a certain product variant",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "page",
+              "description": "Page number",
+              "example": 1
+            },
+            {
+              "in": "query",
+              "name": "pageSize",
+              "description": "Page Size",
+              "example": 10
+            },
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Product variant ID",
+              "example": 7
+            },
+            {
+              "in": "query",
+              "name": "filter",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "status_eq=ready to pack"
+                }
+              },
+              "description": "Filters to apply. fieldName_compare=value where compare is one of [eq,ne,gt,gte,lt,lte,is,not,like,notLike,iLike,notILike]"
+            },
+            {
+              "in": "query",
+              "name": "sort",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "createdAt_desc"
+                }
+              },
+              "description": "Sort order to apply. fieldName_asc or fieldName_desc"
+            },
+            {
+              "in": "query",
+              "name": "fields",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "title"
+                }
+              },
+              "description": "Fields to retrieve"
+            }
+          ],
+          
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "totalCount": {
+                        "type": "integer",
+                        "description": "Total number of orders",
+                        "example": 1
+                      },
+                      "orders": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/Order"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/list-possible-combine-orders": {
+        "get": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Get list of possible combine orders",
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "orders": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/PossibleCombineOrders"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/get/{id}": {
+        "get": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Get an order's details",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "id",
+              "example": 11842
+            },
+            {
+              "in": "query",
+              "name": "listCombinedOrders",
+              "description": "If set to true, combined order details will be shown",
+              "example": true
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "order": {
+                        "$ref": "#/components/schemas/OrderWithLineItems"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/statistics": {
+        "get": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Get orders' statistics",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "dateRange",
+              "description": "Date Range. Example : allTime, today, currentWeek or [01/01/2021 - 02/01/2021] with format of mm/dd/yyyy",
+              "example": "allTime"
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "statistics": {
+                        "$ref": "#/components/schemas/Statistics"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/page-statistics": {
+        "get": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Get orders page statistics",
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "statistics": {
+                        "$ref": "#/components/schemas/Statistics"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/create": {
+        "post": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Create an order",
+          "requestBody": {
+            "description": "The details of the order to create",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "customerEmail": {
+                      "type": "string",
+                      "example": "abc@gmail.com"
+                    },
+                    "customerPhone": {
+                      "type": "string",
+                      "example": "0123456789"
+                    },
+                    "customerFirstName": {
+                      "type": "string",
+                      "example": "Name"
+                    },
+                    "financialStatus": {
+                      "type": "string",
+                      "description": "'pending' or 'paid",
+                      "example": "pending"
+                    },
+                    "priority": {
+                      "type": "integer",
+                      "description": "Order priority. 0 is lowest",
+                      "required": true,
+                      "example": 1
+                    },
+                    "source": {
+                      "type": "string",
+                      "description": "'custom' or 'shopify",
+                      "example": "custom"
+                    },
+                    "orderNumber" : {
+                      "type" : "string",
+                      "description": "order number from external sources",
+                      "example":"myORDER101"
+                    },
+                    "sendToShopify": {
+                      "type": "boolean",
+                      "description": "Whether or not to also create the order on shopify. True if 'true', else false",
+                      "required": false,
+                      "example": true
+                    },
+                    "sendShopifyReceipt": {
+                      "type": "boolean",
+                      "description": "Whether or not to also send an order confirmation to the customer. True if 'true' and sendToShopify is also 'true', else false",
+                      "required": false,
+                      "example": true
+                    },
+                    "lineItems": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "productVariantId": {
+                            "type": "string",
+                            "description": "The ID of the product variant in this order",
+                            "example": 7
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "example": 4
+                          },
+                          "customProductName": {
+                            "type": "string",
+                            "description": "Field ignored if product variant ID is filled",
+                            "example": "Shoes"
+                          },
+                          "customProductURL": {
+                            "type": "string",
+                            "description": "URL to obtain this product from. Field ignored if product variant ID is filled",
+                            "example": "https://harum.io/products/shoes"
+                          },
+                          "customProductPrice": {
+                            "type": "string",
+                            "description": "Price of 1 unit of this product. Field ignored if product variant ID is filled",
+                            "example": "19.99"
+                          },
+                          "customProductCurrency": {
+                            "type": "string",
+                            "description": "Field ignored if product variant ID is filled",
+                            "example": "USD"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "order": {
+                        "$ref": "#/components/schemas/Order"
+                      },
+                      "sentToShopify": {
+                        "type": "boolean",
+                        "description": "Whether or not the order was also created on shopify"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/confirm-order/{id}": {
+        "put": {
+          "tags": ["Orders"],
+          "summary": "Update order status to 'confirmed'",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "id",
+              "example": 6
+            }
+          ],
+          "security": [{"ServerKeyAuth":  []}],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "order": {
+                        "$ref": "#/components/schemas/Order"
+                      },
+                      "sentToShopify": {
+                        "type": "boolean",
+                        "description": "Whether or not the order was also created on shopify"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/list-drafts": {
+        "get": {
+          "tags": [
+            "Draft Orders"
+          ],
+          "summary": "Get a list of draft orders",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "page",
+              "description": "Page number",
+              "example": 1
+            },
+            {
+              "in": "query",
+              "name": "pageSize",
+              "description": "Page Size",
+              "example": 10
+            },
+            {
+              "in": "query",
+              "name": "filter",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "status_eq=ready to pack"
+                }
+              },
+              "description": "Filters to apply. fieldName_compare=value where compare is one of [eq,ne,gt,gte,lt,lte,is,not,like,notLike,iLike,notILike]"
+            },
+            {
+              "in": "query",
+              "name": "sort",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "createdAt_desc"
+                }
+              },
+              "description": "Sort order to apply. fieldName_asc or fieldName_desc"
+            },
+            {
+              "in": "query",
+              "name": "fields",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "title"
+                }
+              },
+              "description": "Fields to retrieve"
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "totalCount": {
+                        "type": "integer",
+                        "description": "Total number of draft orders"
+                      },
+                      "orders": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/DraftOrderWithLineItems"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/update-draft/{id}": {
+        "patch": {
+          "tags": [
+            "Draft Orders"
+          ],
+          "summary": "Update a draft order",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Draft order ID",
+              "example": 1
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "The details of the order to create",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "customerName": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "customerEmail": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "customerCountry": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "customerPhone": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "shippingAddress": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "shippingPhone": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "deliveryAddress": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "deliveryPhone": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "shippingMethod": {
+                      "type": "string",
+                      "description": "",
+                      "required": false
+                    },
+                    "estimatedWeight": {
+                      "type": "string",
+                      "description": "",
+                      "required": false
+                    },
+                    "bungjangEstimate": {
+                      "type": "string",
+                      "description": "",
+                      "required": false
+                    },
+                    "totalEstimate": {
+                      "type": "string",
+                      "description": "",
+                      "required": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "draft": {
+                        "$ref": "#/components/schemas/DraftOrder"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/update-draft-line/{id}": {
+        "patch": {
+          "tags": [
+            "Draft Orders"
+          ],
+          "summary": "Update a draft order",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Draft order line ID",
+              "example": 1
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "The details of the line to update",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "productTitle": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "productLink": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "price": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "quantity": {
+                      "type": "integer",
+                      "required": false
+                    },
+                    "comment": {
+                      "type": "string",
+                      "required": false
+                    },
+                    "secondHand": {
+                      "type": "boolean",
+                      "required": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "draft": {
+                        "$ref": "#/components/schemas/DraftOrder"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/promote-draft/{id}": {
+        "post": {
+          "tags": [
+            "Draft Orders"
+          ],
+          "summary": "Promote a draft order to an order",
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Draft Order ID",
+              "example": 1
+            }
+          ],
+          "requestBody": {
+            "description": "The details of the order promotion",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "financialStatus": {
+                      "type": "string",
+                      "description": "'pending' or 'paid",
+                      "example": "pending"
+                    },
+                    "sendToShopify": {
+                      "type": "boolean",
+                      "description": "Whether or not to also create the order on shopify. True if 'true', else false",
+                      "required": false,
+                      "example": true
+                    },
+                    "sendShopifyReceipt": {
+                      "type": "boolean",
+                      "description": "Whether or not to also send an order confirmation to the customer. True if 'true' and sendToShopify is also 'true', else false",
+                      "required": false,
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "order": {
+                        "$ref": "#/components/schemas/Order"
+                      },
+                      "sentToShopify": {
+                        "type": "boolean",
+                        "description": "Whether or not the order was also created on shopify"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/combined": {
+        "get": {
+          "tags": [
+            "Combined Orders"
+          ],
+          "summary": "Get a list of existing combined orders",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "page",
+              "description": "Page number",
+              "example": 1
+            },
+            {
+              "in": "query",
+              "name": "pageSize",
+              "description": "Page Size",
+              "example": 10
+            },
+            {
+              "in": "query",
+              "name": "filter",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "status_eq=ready to pack"
+                }
+              },
+              "description": "Filters to apply. fieldName_compare=value where compare is one of [eq,ne,gt,gte,lt,lte,is,not,like,notLike,iLike,notILike]"
+            },
+            {
+              "in": "query",
+              "name": "sort",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "createdAt_desc"
+                }
+              },
+              "description": "Sort order to apply. fieldName_asc or fieldName_desc"
+            },
+            {
+              "in": "query",
+              "name": "fields",
+              "explode": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "title"
+                }
+              },
+              "description": "Fields to retrieve"
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "totalCount": {
+                        "type": "integer",
+                        "description": "Total number of orders",
+                        "example": 1
+                      },
+                      "combinedOrders": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "The ID of this combined order",
+                              "example": 1
+                            },
+                            "subOrders": {
+                              "type": "array",
+                              "description": "The IDs of the orders combined",
+                              "example": [
+                                1,
+                                5,
+                                3
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/combined/create": {
+        "post": {
+          "tags": [
+            "Combined Orders"
+          ],
+          "summary": "Create a combined order",
+          "requestBody": {
+            "description": "The suborders",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orders": {
+                      "type": "array",
+                      "description": "Array of order IDs to combine",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "example": [
+                        1,
+                        4,
+                        7
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "combinedOrder": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "The ID of this combined order",
+                            "example": 1
+                          },
+                          "subOrders": {
+                            "type": "array",
+                            "description": "The IDs of the orders combined",
+                            "example": [
+                              1,
+                              5,
+                              3
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/combined/{id}": {
+        "delete": {
+          "tags": [
+            "Combined Orders"
+          ],
+          "summary": "Delete a combined order",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Combined order ID",
+              "example": 1
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "combinedOrder": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "The ID of this combined order",
+                            "example": 1
+                          },
+                          "subOrders": {
+                            "type": "array",
+                            "description": "The IDs of the orders combined",
+                            "example": [
+                              1,
+                              5,
+                              3
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/combined/append/{id}": {
+        "patch": {
+          "tags": [
+            "Combined Orders"
+          ],
+          "summary": "Append an order to a combined order",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Combined order ID",
+              "example": 1
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "The order to append",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "order": {
+                      "type": "integer",
+                      "description": "Order ID to append",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "example": 8
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "combinedOrder": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "The ID of this combined order",
+                            "example": 1
+                          },
+                          "subOrders": {
+                            "type": "array",
+                            "description": "The IDs of the orders combined",
+                            "example": [
+                              1,
+                              5,
+                              3
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/combined/pop/{id}": {
+        "patch": {
+          "tags": [
+            "Combined Orders"
+          ],
+          "summary": "Remove an order from a combined order",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Combined order ID",
+              "example": 1
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "The suborder to pop",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "order": {
+                      "type": "integer",
+                      "description": "Order ID to pop",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "example": 8
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "combinedOrder": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "The ID of this combined order",
+                            "example": 1
+                          },
+                          "subOrders": {
+                            "type": "array",
+                            "description": "The IDs of the orders combined",
+                            "example": [
+                              1,
+                              5,
+                              3
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/update-tracking-number/{id}": {
+        "put": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Set an order's tracking number",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Order ID",
+              "example": 1
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "The tracking number",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "trackingNumber": {
+                      "type": "string",
+                      "required": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "order": {
+                        "type": "integer",
+                        "description": "Order ID"
+                      },
+                      "trackingNumber": {
+                        "type": "string",
+                        "description": "New tracking number"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/update-custom-product-orders/": {
+        "put": {
+          "tags": [
+            "Orders"
+          ],
+          "summary": "Update null productId custom product orders",
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "The tracking number",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "lineItemIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "status": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "updated": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/delete-draft/{id}": {
+        "delete": {
+          "tags": [
+            "Draft Orders"
+          ],
+          "summary": "Delete a draft order",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "Draft order ID",
+              "example": 1
+            }
+          ],
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "draft": {
+                        "$ref": "#/components/schemas/DraftOrder"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/send-to-packing": {
+        "post": {
+          "tags": [
+            "POST"
+          ],
+          "summary": "Send an order into the packing queue",
+          "security": [
+            {
+              "ServerKeyAuth": []
+            }
+          ],
+          "requestBody": {
+            "description": "The order id",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the order to send to packing",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": "No Content"
+            }
+          }
+        }
+      },
+      "/api/orders/fulfill-order": {
+        "post": {
+          "tags": [
+            "POST"
+          ],
+          "summary": "Fulfill an order",
+          "security": [{
+            "ServerKeyAuth": []
+          }],
+          "parameters": [
+            {
+              "in": "query",
+              "name": "shopifyNotification",
+              "description": "Boolean value - true or false",
+              "example": "true"
+            }
+          ],
+          "requestBody": {
+            "description": "The order details",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderId": {
+                      "type": "integer",
+                      "example": "3",
+                      "description": "Order id of the order to be shipped"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/orders/cancel-fulfillment": {
+        "post": {
+          "tags": [
+            "POST"
+          ],
+          "summary": "Cancel a fulfillment",
+          "security": [{
+            "ServerKeyAuth": []
+          }],
+          "requestBody": {
+            "description": "The order details",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderId": {
+                      "type": "integer",
+                      "example": "3",
+                      "description": "Order id of the order to be shipped"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

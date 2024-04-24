@@ -1,15 +1,16 @@
 import dotenv from "dotenv";
-import bodyParser from "body-parser";
 import { catchAsync } from '../controllers/utilities/utils.js';
-import collectionCreation from "../controllers/collections/create.js";
-import { retrieveCollection, retrieveManyCollections } from '../database/queries.js';
+import orderCreation from '../controllers/products/create.js';
+import {retrieveOrder } from '../database/queries.js';
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from '../controllers/collections/swagger.json' assert { type: "json" };
+import swaggerDocument from '../controllers/products/swagger.json' assert { type: "json" };
+import shopifyWebhook from "../controllers/orders/shopify-webhook.js";
 import express from 'express';
-import shopifyWebhook from "../controllers/collections/shopify-webhook.js";
+import bodyParser from "body-parser";
+import fetchAllOrders from "../controllers/fetchAll/fetchAllOrders.js";
 
 dotenv.config({ path: "./.env" });
-const collectionsRouter = express.Router();
+const ordersRouter = express.Router();
 
 /**
  * Swagger Documentation
@@ -26,17 +27,17 @@ const swaggerSort = (a, b) => {
   return METHOD_PRIORITY_LIST[a._root.entries[1][1]] - METHOD_PRIORITY_LIST[b._root.entries[1][1]];
 };
 
-collectionsRouter.use('/api-docs', swaggerUi.serveFiles(swaggerDocument), swaggerUi.setup(swaggerDocument,
+ordersRouter.use('/api-docs', swaggerUi.serveFiles(swaggerDocument), swaggerUi.setup(swaggerDocument,
     { swaggerOptions: { displayRequestDuration: true, operationsSorter: swaggerSort, persistAuthorization: true } }));
 
-    const BodyParser = bodyParser.json({
+const BodyParser = bodyParser.json({
       limit: '10mb',
       verify: (req, _, buf) => {
         ;(req ).rawBody = buf
       },
     }) 
     
-    collectionsRouter.use(BodyParser);
+ordersRouter.use(BodyParser);
 
 const verify = (req, res, next) => {
     if (req.headers['x-server'] === 'true') {
@@ -46,13 +47,12 @@ const verify = (req, res, next) => {
     }
   };
 
-//products
-collectionsRouter.get('/', verify,catchAsync(retrieveManyCollections));
-collectionsRouter.get('/:id', verify, catchAsync(retrieveCollection));
-//
-collectionsRouter.post('/create', verify, catchAsync(collectionCreation));
-collectionsRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
+//orders
+//fetchAll
+ordersRouter.get('/fetchAll', verify, catchAsync(fetchAllOrders));
 
+ordersRouter.get('/:id', verify, catchAsync(retrieveOrder));
+ordersRouter.post('/create', verify, catchAsync(orderCreation));
+ordersRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
 
-
-export default collectionsRouter;
+export default ordersRouter;
