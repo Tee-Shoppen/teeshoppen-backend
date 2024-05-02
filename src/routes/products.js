@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import bodyParser from 'body-parser'
 import { catchAsync } from '../controllers/utilities/utils.js';
 import productCreation from '../controllers/products/create.js';
-import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct } from '../database/queries.js';
+import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct, retrieveProductUpdatedAt} from '../database/queries.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../controllers/products/swagger.json' assert { type: "json" };
 import express from 'express';
@@ -54,6 +54,7 @@ const verify = (req, res, next) => {
 productsRouter.get('/fetchAll', verify,catchAsync(fetchAllProducts));
 productsRouter.get('/', verify,catchAsync(retrieveManyProducts));
 productsRouter.get('/:id', verify, catchAsync(retrieveProduct));
+productsRouter.get('/updated/:id', verify, catchAsync(retrieveProductUpdatedAt));
 
 //
 productsRouter.post('/create', verify, catchAsync(productCreation));

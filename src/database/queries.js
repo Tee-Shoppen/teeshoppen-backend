@@ -15,6 +15,7 @@ const collectionsTable = bigquery.dataset(datasetId).table('collections');
 const ordersTable = bigquery.dataset(datasetId).table('orders');
 const orderLineItemTable = bigquery.dataset(datasetId).table('order_line_items');
 const costPriceMonitoringTable = bigquery.dataset(datasetId).table('cost_price_monitoring');
+const productsTextTable = bigquery.dataset(datasetId).table('productText');
 
 // Function to insert a product
 const insertProduct = async (p) => {
@@ -27,6 +28,17 @@ const insertProduct = async (p) => {
   }
 };
 
+// Function to insert a product
+const insertProductText = async (p) => {
+  try {
+    p.status = 'Need to review';
+    await productsTextTable.insert(p);
+    console.log('Product has been inserted to productText table.');
+  } catch (error) {
+    console.error('Error inserting product to productText:', error);
+    throw error; // Re-throw the error for handling by the caller
+  }
+};
 
 // Function to insert a variant
 const insertVariant = async (v) => {
@@ -116,6 +128,23 @@ const retrieveProduct = async (req, res, next) => {
   } catch (error) {
     console.error('Error running query:', error);
   }
+}
+
+// Function to retrieve a product UPATEDAT by ID
+const retrieveProductUpdatedAt = async (req, res, next) => {
+  const query = `
+  SELECT updated_at FROM ${datasetId}.products where id=${req.params.id}`;
+try {
+  // Run the SQL query
+  const [rows] = await bigquery.query(query);
+  let updatedAt = rows[0].updated_at? rows[0].updated_at.value : '';
+
+//    return product
+    res.send({value:updatedAt});
+
+} catch (error) {
+  console.error('Error running query:', error);
+}
 }
 
 
@@ -641,6 +670,7 @@ const getProductWebshop = async () => {
 // Export functions
 export {
   insertProduct,
+  insertProductText,
   insertVariant,
   insertInventoryitems,
   insertCollection,
@@ -655,6 +685,7 @@ export {
   insertManyInventoryitems,
   insertManyCollections,
   retrieveProduct,
+  retrieveProductUpdatedAt,
   retrieveVariant,
   retrieveInventoryItem,
   retrieveCollection,
