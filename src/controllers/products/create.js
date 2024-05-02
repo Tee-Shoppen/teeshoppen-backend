@@ -1,6 +1,7 @@
-import { insertProduct, insertManyVariants, insertManyInventoryitems, insertProductText } from '../../database/queries.js'
+import { insertProduct, insertManyVariants, insertManyInventoryitems } from '../../database/queries.js'
 import { domainToSubDomain,subDomainMap } from '../utilities/shop-mapper.js'
 import Shopify from '../apis/shopify.js'
+import generateProductDescriptionSingle from '../descriptionAI/generateSingle.js'
 
 const productCreation = async (req) => {
   const { body: product } = req
@@ -80,10 +81,11 @@ const productCreation = async (req) => {
     requires_shipping: inventoryItem.requires_shipping,
   }))
 
-  if(product.body_html.length < 500) {
-    await insertProductText(productMapped);
-  }
+  
   await insertProduct(productMapped);
+  if(product.body_html.length < 500) {
+    await generateProductDescriptionSingle(product.id);
+  }
   await insertManyVariants(variantsMapped);
   await insertManyInventoryitems(inventoryItemsMapped);
 

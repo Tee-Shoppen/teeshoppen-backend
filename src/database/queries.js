@@ -40,6 +40,44 @@ const insertProductText = async (p) => {
   }
 };
 
+// Function to insert a productDesc
+const insertDescription = async (p) => {
+  try {
+    await productsTextTable.insert(p);
+    console.log('Product has been inserted to productText table.');
+  } catch (error) {
+    console.error('Error inserting product to productText:', error.errors[0]);
+    throw error; // Re-throw the error for handling by the caller
+  }
+};
+
+// Function to update a productDesc
+const updateDescription = async (req,res,next) => {
+  const query = `SELECT * EXCEPT(row_number)
+  FROM (
+        SELECT *, ROW_NUMBER()
+                  OVER (PARTITION BY id, title ORDER BY updated_at DESC) row_number
+        FROM ${datasetId}.productText) 
+  WHERE row_number = 1 and id=${req.params.id}`;
+  try {
+    // Run the SQL query
+    const rows= await bigquery.query(query);
+    if (!rows) return;
+    let newStatus = rows[0][0];
+    newStatus.status = 'Done';
+    newStatus.updated_at = new Date();
+
+    await productsTextTable.insert(newStatus);
+    console.log('Product has been updated in productText table.');
+
+  //    return product
+      res.send({product:newStatus});
+
+  } catch (error) {
+    console.error('Error running query:', error);
+  }
+};
+
 // Function to insert a variant
 const insertVariant = async (v) => {
   try {
@@ -196,9 +234,17 @@ try {
 
 // Function to retrieve many products
 const retrieveManyProducts = async (req, res, next) => {
+    //const query = `
+    //SELECT * FROM ${datasetId}.products limit ${req.query.pageSize} offset ${req.query.page}`;
     const query = `
-    SELECT * FROM ${datasetId}.products limit ${req.query.pageSize} offset ${req.query.page}`;
-
+    SELECT * EXCEPT(row_number)
+    FROM (
+          SELECT *, ROW_NUMBER()
+                    OVER (PARTITION BY id, title
+                          ORDER BY updated_at DESC) row_number
+          FROM ${datasetId}.products) 
+    WHERE row_number = 1 limit ${req.query.pageSize} offset ${req.query.page} ;
+    `
   try {
     // Run the SQL query
     const [rows] = await bigquery.query(query);
@@ -210,6 +256,50 @@ const retrieveManyProducts = async (req, res, next) => {
     console.error('Error running query:', error);
   }
 }
+
+// Function to retrieve many products with < 500
+const retrieveProductsforAI = async (req, res, next) => {
+  const query = `
+  SELECT id, title, body_html, webshop, vendor, tags
+  FROM (
+        SELECT *, ROW_NUMBER()
+                  OVER (PARTITION BY id, title) row_number
+        FROM ${datasetId}.products) 
+  WHERE row_number = 1 and LENGTH(body_html) < 500 and id=8776874557770;`
+try {
+  // Run the SQL query
+  const [rows] = await bigquery.query(query);
+  //    return product
+
+  return rows;
+
+} catch (error) {
+  console.error('Error running query:', error);
+}
+}
+
+// Function to retrieve many products with < 500 for single product
+const retrieveProductsforAISingle = async (id) => {
+  const query = `
+  SELECT id, title, body_html, webshop, vendor, tags
+  FROM (
+        SELECT *, ROW_NUMBER()
+                  OVER (PARTITION BY id, title) row_number
+        FROM ${datasetId}.products) 
+  WHERE row_number = 1 and LENGTH(body_html) < 500 and id=${id};`
+try {
+  // Run the SQL query
+  const [rows] = await bigquery.query(query);
+  //    return product
+
+  return rows;
+
+} catch (error) {
+  console.error('Error running query:', error);
+}
+}
+
+
 
 // Function to retrieve many variants
 const retrieveManyVariants = async () => {
@@ -671,6 +761,7 @@ const getProductWebshop = async () => {
 export {
   insertProduct,
   insertProductText,
+  insertDescription,
   insertVariant,
   insertInventoryitems,
   insertCollection,
@@ -690,10 +781,13 @@ export {
   retrieveInventoryItem,
   retrieveCollection,
   retrieveManyProducts,
+  retrieveProductsforAI,
+  retrieveProductsforAISingle,
   retrieveManyVariants,
   retrieveManyInventoryItems,
   retrieveManyCollections,
   updateProduct,
+  updateDescription,
   updateVariant,
   updateOrCreateVariant,
   updateInventoryItem,

@@ -38,7 +38,7 @@ const shopifyWebhook = async (req, res, next) => {
             }
        
     }
-    case 'products/update': {
+    case 'products/updated': {
       console.log("TRACE product/update webhook starts");
       console.log("Product: ShopifyId, title", data.id || "No ShopifyId", data.title || "No Title");
       //updateProduct(data.id, data);

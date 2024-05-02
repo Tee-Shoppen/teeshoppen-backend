@@ -966,5 +966,72 @@ export default {
       "type": 'STRING',
       "required": false,
     }
-  ]
+  ],
+  productText_schema: [{
+    name: 'id',
+    type: 'INT64',
+    required: true
+  },
+  // Varchar becomes STRING
+  {
+    name: 'status',
+    type: 'STRING',
+    required: true
+  },
+  // Enum becomes STRING
+  {
+    name: 'title',
+    type: 'STRING',
+    required: true
+  },
+  // Varchar becomes STRING
+  {
+    name: 'link',
+    type: 'STRING',
+    required: true
+  },
+  // Varchar becomes STRING
+  {
+    name: 'store',
+    type: 'STRING',
+    required: true
+  },
+  // Varchar becomes STRING
+  {
+    name: 'created_at',
+    type: 'TIMESTAMP',
+    required: true
+  },
+  {
+    name: 'updated_at',
+    type: 'TIMESTAMP',
+    required: true
+  },
+  // DateTime becomes TIMESTAMP
+  {
+    name: 'category',
+    type: 'STRING',
+    required: true
+  }, // Varchar becomes STRING
+  {
+    name: 'language',
+    type: 'STRING',
+    required: true
+  }, // Varchar becomes STRING
+  {
+    name: 'new_description',
+    type: 'STRING',
+    required: true
+  }, // Varchar becomes STRING
+  {
+    name: 'new_title',
+    type: 'STRING',
+    required: true
+  }, // Varchar becomes STRING
+  {
+    name: 'new_seoDesc',
+    type: 'STRING',
+    required: true
+  },
+  ],
 };

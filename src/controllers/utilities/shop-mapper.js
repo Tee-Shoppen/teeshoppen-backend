@@ -28,9 +28,25 @@ const language = {
   'femalefashionstore-dk': 'Danish',
 }
 
+const storeName = {
+  noodlefirm: 'Teeshoppen - Denmark',
+  'teeshoppen-cz': 'Teeshoppen - Czech Republic',
+  teeshoppengermany: 'Teeshoppen - Germany',
+  'teeshoppen-finland': 'Teeshoppen - Finland',
+  'teeshoppen-nl': 'Teeshoppen - Netherlands',
+  'teeshoppen-norway': 'Teeshoppen - Norway',
+  'teeshoppen-pl': 'Teeshoppen - Poland',
+  'teeshoppen-sweden': 'Teeshoppen - Sweden',
+  'teeshoppen-uk': 'Teeshoppen - United Kingdom',
+  'teeshoppen-com': 'Teeshoppen - United States',
+  'test-teeshoppen': 'Teeshoppen - Test Country',
+  'femalefashionstore-dk': 'Itsmay - Denmark',
+}
+
 const subDomainMap = (subDomain) => {
   return {
     name: subDomain,
+    storeName: storeName[subDomain],
     country: country[subDomain],
     language: language[subDomain],
     apiKey: `SHOPIFY_API_${subDomain.replace('-', '').toUpperCase()}`,

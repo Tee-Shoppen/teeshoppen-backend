@@ -50,6 +50,10 @@ class BigQueryMigration {
         tableId: 'orders',
         schema: schemas.orders_schema,
       },
+      {
+        tableId: 'productText',
+        schema: schemas.productText_schema,
+      },
       
       // Add more table objects as needed
     ];

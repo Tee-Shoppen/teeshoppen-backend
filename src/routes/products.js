@@ -2,12 +2,13 @@ import dotenv from "dotenv";
 import bodyParser from 'body-parser'
 import { catchAsync } from '../controllers/utilities/utils.js';
 import productCreation from '../controllers/products/create.js';
-import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct, retrieveProductUpdatedAt} from '../database/queries.js';
+import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct, retrieveProductUpdatedAt, updateDescription} from '../database/queries.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../controllers/products/swagger.json' assert { type: "json" };
 import express from 'express';
 import shopifyWebhook from "../controllers/products/shopify-webhook.js";
 import fetchAllProducts from "../controllers/fetchAll/fetchAllProducts.js";
+import generateProductDescription from "../controllers/descriptionAI/generateMultiple.js";
 
 dotenv.config({ path: "./.env" });
 const productsRouter = express.Router();
@@ -60,6 +61,8 @@ productsRouter.get('/updated/:id', verify, catchAsync(retrieveProductUpdatedAt))
 productsRouter.post('/create', verify, catchAsync(productCreation));
 productsRouter.post('/update', verify,catchAsync(updateProduct));
 productsRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
+productsRouter.post('/generate-desc', verify, catchAsync(generateProductDescription));
+productsRouter.post('/update-desc/:id', verify, catchAsync(updateDescription));
 
 //variants
 productsRouter.get('/variant/:id', verify, catchAsync(retrieveVariant));
