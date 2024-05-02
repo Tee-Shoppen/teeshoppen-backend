@@ -265,7 +265,7 @@ const retrieveProductsforAI = async (req, res, next) => {
         SELECT *, ROW_NUMBER()
                   OVER (PARTITION BY id, title) row_number
         FROM ${datasetId}.products) 
-  WHERE row_number = 1 and LENGTH(body_html) < 500 and id=8776874557770;`
+  WHERE row_number = 1 and LENGTH(body_html) < 500;`
 try {
   // Run the SQL query
   const [rows] = await bigquery.query(query);
