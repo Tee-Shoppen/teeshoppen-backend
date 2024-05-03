@@ -12,11 +12,13 @@ import { retrieveProductsforAI , insertDescription} from '../../database/queries
 import { promptGpt4, productDescriptionPrompt, productHtmlPrompt , seoDescriptionPrompt} from '../utilities/aiHelper.js'
 
 // Functions
-const descriptionPrompt = (language, product_title, vendor, tags) => {
+const descriptionPrompt = (language, product_title, vendor, tags, pID) => {
   const gender_tags = tags
     ? tags.split(', ').filter((tag) => tag.toLocaleLowerCase().includes('PIM_Gender_'.toLocaleLowerCase()))
     : []  
   const gender = gender_tags.map((gender) => gender.toLowerCase().split('PIM_Gender_'.toLowerCase())[1]).join(' & ')
+  console.log('id', pid);
+  console.log('language', language);
   const prompt = productDescriptionPrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
@@ -50,13 +52,12 @@ const generateProductDescription = async (req,res) => {
   const productsFound = await retrieveProductsforAI()
   console.log('productFound --------------', productsFound.length)
  if (productsFound.length === 0) return
-  const mergedItems = []
   res.sendStatus(200);
   // For each product: Initialize items in Monday.com and Merge products with items
   for (const product of productsFound) {
     if (!product.webshop) return
      const { name, storeName, language, apiKey } = subDomainMap(product.webshop)
-     const description = descriptionPrompt(language, product.title, product.vendor ?? '', product.tags ?? '')
+     const description = descriptionPrompt(language, product.title, product.vendor ?? '', product.tags ?? '', product.id)
      const seoDesc = seoDescription(language, product.title, product.vendor ?? '', product.tags ?? '')
     // console.log('description -----', description);
      const aiDescription = await promptGpt4(openai, description)
