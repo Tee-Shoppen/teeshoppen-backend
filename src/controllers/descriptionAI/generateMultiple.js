@@ -17,7 +17,7 @@ const descriptionPrompt = (language, product_title, vendor, tags, pID) => {
     ? tags.split(', ').filter((tag) => tag.toLocaleLowerCase().includes('PIM_Gender_'.toLocaleLowerCase()))
     : []  
   const gender = gender_tags.map((gender) => gender.toLowerCase().split('PIM_Gender_'.toLowerCase())[1]).join(' & ')
-  console.log('id', pid);
+  console.log('id', pID);
   console.log('language', language);
   const prompt = productDescriptionPrompt[language].replace('<title>', product_title)
 
