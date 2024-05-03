@@ -83,7 +83,9 @@ const productCreation = async (req) => {
 
   
   await insertProduct(productMapped);
+  
   if(product.body_html.length < 500) {
+    console.log(product.body_html.length, ' product.body_html.length')
     await generateProductDescriptionSingle(product.id);
   }
   await insertManyVariants(variantsMapped);
