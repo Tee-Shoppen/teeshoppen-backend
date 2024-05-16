@@ -18,7 +18,7 @@ module.exports = {
         '"sort_order" VARCHAR(255), ' +
         '"template_suffix" VARCHAR(255), ' +
         '"published_scope" VARCHAR(255), ' +
-        '"admin_graphql_api_id" VARCHAR(255) NOT NULL' +
+        '"admin_graphql_api_id" VARCHAR(255)' +
       ');'
       ))
     

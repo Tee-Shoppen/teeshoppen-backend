@@ -1,15 +1,10 @@
 import openai from '../apis/chatgpt.js'
 import { subDomainMap } from '../utilities/shop-mapper.js'
 import { insertDescription, retrieveProductsforAISingle, createMetaField} from '../../database/queries.js'
-// import {
-//   sql,
-//   products_tbl,
-//   DatabaseProduct,
-//   retrieveManyProducts,
-//   insertDescriptionAi,
-//   updateDescriptionAi,
-// } from '@/database/queries'
-import { promptGpt4, productDescriptionPrompt, productHtmlPrompt , seoDescriptionPrompt} from '../utilities/aiHelper.js'
+import { promptGpt4, productDescriptionPrompt, productHtmlPrompt , seoDescriptionPrompt, seoTitlePrompt} from '../utilities/aiHelper.js'
+import dotenv from "dotenv";
+
+dotenv.config({ path: "./.env" });
 
 // Functions
 const descriptionPrompt = (language, product_title, vendor, tags) => {
@@ -38,6 +33,19 @@ const seoDescription = (language, product_title, vendor, tags) => {
   else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
 }
 
+const seoTitle = (language, product_title, vendor, tags) => {
+  const gender_tags = tags
+    ? tags.split(', ').filter((tag) => tag.toLocaleLowerCase().includes('PIM_Gender_'.toLocaleLowerCase()))
+    : []  
+  const gender = gender_tags.map((gender) => gender.toLowerCase().split('PIM_Gender_'.toLowerCase())[1]).join(' & ')
+  const prompt = seoTitlePrompt[language].replace('<title>', product_title)
+
+  if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
+  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', '')
+  else if (!vendor && gender) return prompt.replace('Brand = <brand>', '').replace('<gender>', gender)
+  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
+}
+
 const htmlPrompt = (language, description) => `${productHtmlPrompt[language]}\n\n${description}`
 
 // Controller
@@ -49,20 +57,22 @@ const generateProductDescriptionSingle = async (id) => {
   // For each product: Initialize items in Monday.com and Merge products with items
   for (const product of productsFound) {
     if (!product.webshop) return
-     const { name, storeName, language, apiKey } = subDomainMap(product.webshop)
+    let a = await ProductText.findOne({where : {product_id  :product.id}});
+    if (a){
+      console.log('Desc exists');
+      return;
+    }
+    console.log('Generating for product ', product.id);
+     const { name, storeName, language, apiKey } = subDomainMap(product.webshop);
      const description = descriptionPrompt(language, product.title, product.vendor ?? '', product.tags ?? '')
      const seoDesc = seoDescription(language, product.title, product.vendor ?? '', product.tags ?? '')
-    // console.log('description -----', description);
+     const seoTit = seoTitle(language, product.title, product.vendor ?? '', product.tags ?? '')
      const aiDescription = await promptGpt4(openai, description)
      const aiseoDesc = await promptGpt4(openai, seoDesc)
-     //console.log('aiDescription -----', aiDescription);
+     const aiTitle = await promptGpt4(openai, seoTit)
+  
      const html = htmlPrompt(language, aiDescription)
       let new_html = await promptGpt4(openai, html)
-      if (!product.body_html) {
-        new_html = new_html.concat('<p> At TeeShoppen, we specialize in producing basic clothing for the mature person. We have over 750,000 customers through our webshop annually and ship packages every day of the week.</p>');
-      } else {
-        new_html = new_html.concat(product.body_html,'<p> At TeeShoppen, we specialize in producing basic clothing for the mature person. We have over 750,000 customers through our webshop annually and ship packages every day of the week.</p>');
-      }
       let new_description = await new_html;
       
      let newProduct = {
@@ -75,7 +85,7 @@ const generateProductDescriptionSingle = async (id) => {
       store: storeName,
       category: 'Products',
       new_description: new_description,
-      new_title : product.title,
+      new_title : aiTitle,
       new_seo_desc : aiseoDesc,
       created_at : new Date(),
       updated_at : new Date(),
@@ -86,7 +96,7 @@ const generateProductDescriptionSingle = async (id) => {
     const details = {
       id : product.id,
       webshop : product.webshop,
-      desc : product.body_html,
+      desc : product.body_html || product.title || 'No description in Shopify.',
       title : product.title
     }
     await createMetaField(details);

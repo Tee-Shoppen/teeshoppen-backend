@@ -156,7 +156,7 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
       allowNull: false,
     },
     new_title: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     new_seo_desc: {
@@ -544,7 +544,6 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         handle: DataTypes.STRING,
         title: {
           type: DataTypes.STRING,
-          allowNull: false,
         },
         createdAt: {
             type: DataTypes.DATE,
@@ -556,7 +555,6 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         },
         deletedAt: {
             type: DataTypes.DATE,
-            allowNull: false,
           },
         body_html: {
           type: DataTypes.STRING,
@@ -571,7 +569,6 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         published_scope: DataTypes.STRING,
         admin_graphql_api_id: {
           type: DataTypes.STRING,
-          allowNull: false,
         },
       }, {
             schema: "collections",

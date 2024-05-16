@@ -73,7 +73,7 @@ module.exports = {
             '"category" VARCHAR(255) NOT NULL, ' +
             '"language" VARCHAR(255) NOT NULL, ' +
             '"new_description" TEXT NOT NULL, ' +
-            '"new_title" VARCHAR(255) NOT NULL, ' +
+            '"new_title" TEXT NOT NULL, ' +
             '"new_seo_desc" TEXT NOT NULL, ' +
             '"meta_desc_id" BIGINT, ' +
             '"meta_title_id" BIGINT ' +

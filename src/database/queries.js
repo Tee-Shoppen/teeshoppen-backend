@@ -156,8 +156,12 @@ const updateMetaField = async (req,res,next) => {
         }
       }
 
-      // mainProduct.body_html = product.new_description;
-      // mainProduct.save();
+      mainProduct.body_html = product.new_description;
+      await mainProduct.save().then((saver) => {
+        console.log('SAVED in database');
+      })
+
+      await shopify.updateProduct(req.params.id,{body_html :product.new_description});
 
       let ids = {};
       ids = {
