@@ -21,8 +21,6 @@ const domainInformation = (subDomain) => {
   const subDomainInfo = subDomainMap(subDomain)
 
   console.log(subDomainInfo);
-  
-  let apiKeys = process.env.GOOGLE_PROJECT_ID;
 
   const { [subDomainInfo.apiKey] : apiKey } = process.env
 
@@ -206,6 +204,7 @@ const parseProductsToDatabase = (webshop, productsDownloaded) => {
       template_suffix: product.template_suffix,
       published_scope: product.published_scope,
       tags: product.tags,
+      variants : product.variants.map(v => ({...v, webshop : webshop}))
     })),
     variants: productsDownloaded.flatMap((product) =>
       product.variants.map((variant) => ({
@@ -348,15 +347,17 @@ const all = async (subDomain) => {
   })
 
   const insertVariantsPromise = insertMany(toDatabaseVariants, async (batch) => {
-    await insertManyVariants(batch).then((v) => {
-      // counterInsertVariants += v.rowsAffected
-      // b2variants.update(counterInsertVariants, {
-      //   title: 'Insert Variants',
-      // })
-    })
+    //##########################
+    // await insertManyVariants(batch).then((v) => {
+    //   // counterInsertVariants += v.rowsAffected
+    //   // b2variants.update(counterInsertVariants, {
+    //   //   title: 'Insert Variants',
+    //   // })
+    // })
   })
 
   const insertCollectionsPromise = insertMany(toDatabaseCollections, async (batch) => {
+    // #############################
     await insertManyCollections(batch).then((c) => {
       // counterInsertCollections += c.rowsAffected
       // b2collections.update(counterInsertCollections, {
@@ -383,7 +384,8 @@ const all = async (subDomain) => {
 //     })
 //   })
 
-  await Promise.all([insertProductsPromise, insertVariantsPromise,insertCollectionsPromise])
+  //await Promise.all([insertProductsPromise, insertVariantsPromise,insertCollectionsPromise])
+  await Promise.all([insertProductsPromise,insertCollectionsPromise])
   insertProgressBar.stop()
   console.log('Migration completed.')
 }
@@ -432,22 +434,25 @@ const inventoryItems = async (subDomain) => {
 
   const b2inventoryItems = createProgressBar(capitalize(`Downloaded ${name} Inventory Items`)).single
   const inventoryItemsDownloaded = await downloadInventoryItems(variantsDownloaded, shopify, b2inventoryItems)
-
+  
   // Parse
   const { inventoryItems: toDatabaseInventoryItems } = parseInventoryItemsToDatabase(
     name,
     variantsDownloaded,
     inventoryItemsDownloaded
   )
+  console.log(toDatabaseInventoryItems);
 
   //  // Insert
   const b3inventoryItems = createProgressBar(capitalize(`Inserted ${name} Inventory Items`)).single
   b3inventoryItems.start(toDatabaseInventoryItems.length, 0)
 
   let counterInsertInventoryItems = 0
+
   const insertInventoryItemsPromise = insertMany(toDatabaseInventoryItems, async (batch) => {
     setTimeout(async () => {
       await insertManyInventoryitems(batch).then((i) => {
+        
         // counterInsertInventoryItems += i.rowsAffected
         // b3inventoryItems.update(counterInsertInventoryItems, {
         //   title: 'Insert Inventory Items',

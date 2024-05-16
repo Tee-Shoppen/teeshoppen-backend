@@ -4,6 +4,7 @@ import createOrderModel from './create-order.js';
 import { insertManyOrders, insertManyOrderLineItems } from '../../database/queries.js';
 import Shopify from '../apis/shopify.js';
 import { subDomainMap } from '../utilities/shop-mapper.js';
+import { Order, OrderLineItem } from '../../database/postgresdb.js';
 
 // Helper function
 const domainInformation = (subDomain) => {
@@ -25,19 +26,37 @@ const domainInformation = (subDomain) => {
 async function handleCreateOrders(orders,webshop) {
   console.log(orders.length,'FETCHING ORDERS IN BACKEND...');
   const orderList = [];
-  for (let p = 0; p < orders.length; p += 1) {
+  // await insertManyOrders(orderList);
+  for (let p = 0; p < 1; p += 1) {
+    // console.log(orders[p]);
      await orderList.push(await createOrderModel(orders[p],webshop));
   }
-  let x=0;
-  await Promise.all(orderList).then(
-    await orderList.forEach(async (processedOrders) => {
-      let lineItem = processedOrders[0].lineItems;
-      //console.log('line items---------------------', lineItem);
-      await delete processedOrders[0].lineItems;
-      await insertManyOrders(processedOrders[0]),
-      await insertManyOrderLineItems(lineItem)
+  await Promise.all(orderList)
+  .then(async ({...processedOrders}) => {
+    console.log(processedOrders);
+    Order.bulkCreate(processedOrders, {
+      include :{
+        model : OrderLineItem,
+        as : 'lineItems'
+      },
+      returning : true,
     })
-  )
+  })
+  .catch((err) => {
+    console.log('-----------------',processedOrders )
+    console.log('initialize-orders', err.response?.data || err.stack || err.message || err.toString());
+  });
+  // let x=0;
+  // await Promise.all(orderList).then(
+  //   await insertManyOrders(orderList)
+  //   // await orderList.forEach(async (processedOrders) => {
+  //   //   let lineItem = processedOrders[0].lineItems;
+  //   //   //console.log('line items---------------------', lineItem);
+  //   //   // await delete processedOrders[0].lineItems;
+  //   //   await insertManyOrders(processedOrders[0])
+  //   //   // await insertManyOrderLineItems(lineItem)
+  //   // })
+  // )
  
     
 }
@@ -87,7 +106,9 @@ async function initializeOrders(subDomain) {
         console.log(`${shopifyOrders.length} orders fetched in ${dbt - startTime}ms`);
         await handleCreateOrders(shopifyOrders,name).then(() => {
           console.log(`${shopifyOrders.length} orders written to database in ${new Date() - dbt}ms`);
-        });
+        }).catch(err => {
+          console.log('err initialize-order,', err);
+        })
         startTime = new Date();
       })
       .catch((err) => {

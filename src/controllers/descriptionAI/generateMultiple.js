@@ -1,6 +1,6 @@
 import openai from '../apis/chatgpt.js'
 import { subDomainMap } from '../utilities/shop-mapper.js'
-import { retrieveProductsforAI , insertDescription} from '../../database/queries.js'
+import { retrieveProductsforAI , insertDescription, createMetaField} from '../../database/queries.js'
 // import {
 //   sql,
 //   products_tbl,
@@ -17,8 +17,6 @@ const descriptionPrompt = (language, product_title, vendor, tags, pID) => {
     ? tags.split(', ').filter((tag) => tag.toLocaleLowerCase().includes('PIM_Gender_'.toLocaleLowerCase()))
     : []  
   const gender = gender_tags.map((gender) => gender.toLowerCase().split('PIM_Gender_'.toLowerCase())[1]).join(' & ')
-  console.log('id', pID);
-  console.log('language', language);
   const prompt = productDescriptionPrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
@@ -49,8 +47,10 @@ const generateProductDescription = async (req,res) => {
   //if (!subDomain) return
   //const { name, storeName, language, apiKey } = subDomainMap(subDomain)
   // Retrieve products from database where description is null
-  const productsFound = await retrieveProductsforAI()
+  const productsFound = await retrieveProductsforAI();
+
   console.log('productFound --------------', productsFound.length)
+  //console.log('productFound --------------', productsFound.rows)
  if (productsFound.length === 0) return
   res.sendStatus(200);
   // For each product: Initialize items in Monday.com and Merge products with items
@@ -59,7 +59,7 @@ const generateProductDescription = async (req,res) => {
      const { name, storeName, language, apiKey } = subDomainMap(product.webshop)
      const description = descriptionPrompt(language, product.title, product.vendor ?? '', product.tags ?? '', product.id)
      const seoDesc = seoDescription(language, product.title, product.vendor ?? '', product.tags ?? '')
-    // console.log('description -----', description);
+    //  console.log('seoDesc -----', seoDesc);
      const aiDescription = await promptGpt4(openai, description)
      const aiseoDesc = await promptGpt4(openai, seoDesc)
      //console.log('aiDescription -----', aiDescription);
@@ -71,11 +71,11 @@ const generateProductDescription = async (req,res) => {
         new_html = new_html.concat(product.body_html,'<p> At TeeShoppen, we specialize in producing basic clothing for the mature person. We have over 750,000 customers through our webshop annually and ship packages every day of the week.</p>');
       }
       let new_description = await new_html;
-      //console.log(new_description);
-      
+      // console.log(new_description);
       
      let newProduct = {
-      id: product.id,
+      webshop:product.webshop,
+      product_id: product.id,
       title: product.title,
       body_html: product.body_html,
       status: 'Need to review',
@@ -84,14 +84,22 @@ const generateProductDescription = async (req,res) => {
       category: 'Products',
       new_description: new_description,
       new_title : product.title,
-      new_seoDesc : aiseoDesc,
+      new_seo_desc : aiseoDesc,
       created_at : new Date(),
       updated_at : new Date(),
       language : language
     }
-    console.log(newProduct.id)
+    // console.log(newProduct.id)
     await delete newProduct.body_html;
+    // console.log('newProduct',newProduct);
     await insertDescription(newProduct);
+    const details = {
+      id : product.id,
+      webshop : product.webshop,
+      desc : product.body_html,
+      title : product.title
+    }
+    await createMetaField(details);
   }
   // For each product: Generate description, Update description in shopify while updating status in Monday.com
   //const shopify = new Shopify(name, process.env[apiKey]!)

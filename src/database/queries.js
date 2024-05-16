@@ -6,6 +6,12 @@ dotenv.config({ path: "./.env" });
 const bigquery = getBigQueryClient();
 // Define the dataset ID
 const datasetId = process.env.BIGQUERY_DATASET_ID;
+import sequelize from "sequelize";
+import sql from 'sequelize';
+const { Op } = sql;
+import { Order,OrderLineItem,Product,Variant,Collection,ProductText,InventoryItem } from "./postgresdb.js";
+import { domainToSubDomain,subDomainMap } from "../controllers/utilities/shop-mapper.js";
+import Shopify from "../controllers/apis/shopify.js";
 
 // Define BigQuery tables
 const productsTable = bigquery.dataset(datasetId).table('products');
@@ -19,20 +25,35 @@ const productsTextTable = bigquery.dataset(datasetId).table('productText');
 
 // Function to insert a product
 const insertProduct = async (p) => {
-  try {
-    await productsTable.insert(p);
-    console.log('Product created.');
-  } catch (error) {
+  try{
+    Product.create(p,
+      {
+        include: [{
+          model: Variant,
+          as: 'variants',
+        }],
+        returning: true,
+      }
+    ).then((resV) => {
+      console.log('shopify-webhook/products/create || Created product successfully');
+      console.log("TRACE product/create webhook ends in product.create()");
+    })
+    .catch((err) => {
+      console.log('shopify-webhook/products/create', err.response?.data || err.stack || err.message || err.toString());
+    });
+  }
+  catch (error) {
     console.error('Error inserting product:', error);
     throw error; // Re-throw the error for handling by the caller
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert a product
 const insertProductText = async (p) => {
   try {
     p.status = 'Need to review';
-    await productsTextTable.insert(p);
+    await ProductText.insert(p);
     console.log('Product has been inserted to productText table.');
   } catch (error) {
     console.error('Error inserting product to productText:', error);
@@ -43,41 +64,127 @@ const insertProductText = async (p) => {
 // Function to insert a productDesc
 const insertDescription = async (p) => {
   try {
-    await productsTextTable.insert(p);
-    console.log('Product has been inserted to productText table.');
+    await ProductText.create(p)
+    .then((textDesc) => {
+      console.log('Product has been inserted to productText table.');
+    })
+    .catch(err => {
+      console.log('insertDescription || ,', err);
+    })
   } catch (error) {
-    console.error('Error inserting product to productText:', error.errors[0]);
+    console.error('insertDescription || Error inserting product to productText:', error.errors[0]);
     throw error; // Re-throw the error for handling by the caller
   }
 };
 
-// Function to update a productDesc
-const updateDescription = async (req,res,next) => {
-  const query = `SELECT * EXCEPT(row_number)
-  FROM (
-        SELECT *, ROW_NUMBER()
-                  OVER (PARTITION BY id, title ORDER BY updated_at DESC) row_number
-        FROM ${datasetId}.productText) 
-  WHERE row_number = 1 and id=${req.params.id}`;
+// Function to get or create product metafield
+const createMetaField = async (details) => {
   try {
-    // Run the SQL query
-    const rows= await bigquery.query(query);
-    if (!rows) return;
-    let newStatus = rows[0][0];
-    newStatus.status = 'Done';
-    newStatus.updated_at = new Date();
+    const { name, apiKey } = subDomainMap(details.webshop)
+    const api = process.env[apiKey];
+    const shopify = new Shopify(name, process.env[apiKey]);
 
-    await productsTextTable.insert(newStatus);
-    console.log('Product has been updated in productText table.');
+      //create a metafield
+      const desc_params = {
+        "metafield": {
+          "namespace": "global",
+          "key": "description_tag",
+          "value": details.desc,
+          "type": "multi_line_text_field",
+          "definition": {
+            "name": "Meta description",
+            "ownerType": "PRODUCT"
+          }
+        }
+      }
 
+      const title_params = {
+        "metafield": {
+          "namespace": "global",
+          "key": "title_tag",
+          "value": details.title,
+          "type": "multi_line_text_field",
+          "definition": {
+            "name": "Meta title",
+            "ownerType": "PRODUCT"
+          }
+        }
+      }
+      const {data  : metafieldDesc } = await shopify.createProductMetafield(details.id,desc_params);
+      const {data  : metafieldtitle } =await shopify.createProductMetafield(details.id,title_params);
+
+      const productText = await ProductText.findOne({ where: { product_id: details.id }});
+      productText.meta_desc_id = metafieldDesc.metafield?.id || null;
+      productText.meta_title_id = metafieldtitle.metafield?.id || null;
+      productText.save();
+  } catch (error) {
+    console.error('Error running query:', error);
+  }
+};
+
+// Function to update a productDesc
+const updateMetaField = async (req,res,next) => {
+  try {
+    if(!req.body) return;
+    const product = await ProductText.findOne({ where: { product_id: req.params.id }});
+    const mainProduct = await Product.findOne({ where: { id: req.params.id }});
+    if(!product) return;
+
+    const { name, apiKey } = subDomainMap(mainProduct.webshop)
+    const shopify = new Shopify(name, process.env[apiKey]);
+ 
+    product.status = 'Done';
+    product.updated_at = new Date();
+    product.new_description = req.body.newDesc;
+    product.new_title = req.body.seoTitle;
+    product.new_seo_desc = req.body.seoDesc;
+    res.sendStatus(200);
+
+    await product.save().then(async() => {
+      // res.sendStatus(200);
+      const seoDescDetails = {
+        "metafield": {
+          "value": product.new_seo_desc
+        }
+      }
+      const seoTitleDetails = {
+        "metafield": {
+          "value": product.new_title
+        }
+      }
+
+      // mainProduct.body_html = product.new_description;
+      // mainProduct.save();
+
+      let ids = {};
+      ids = {
+        meta_id : product.meta_desc_id,
+        product_id : req.params.id
+      }
+      const b = await shopify.updateProductMetafield(ids,seoDescDetails);
+      ids = {
+        meta_id : product.meta_title_id,
+        product_id : req.params.id
+      }
+      const c= await shopify.updateProductMetafield(ids,seoTitleDetails);
+    
+    })
+    // await product.update({ ...newProduct })
+    // .then(async (newProd) => {
+    //     await product.save();
+    //     res.sendStatus(200);
+
+    // })
+    console.log('updateMetaField || Product has been updated in productText table and Shopify.');
   //    return product
-      res.send({product:newStatus});
+     
 
   } catch (error) {
     console.error('Error running query:', error);
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert a variant
 const insertVariant = async (v) => {
   try {
@@ -89,6 +196,7 @@ const insertVariant = async (v) => {
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert an inventory item
 const insertInventoryitems = async (i) => {
   try {
@@ -102,9 +210,17 @@ const insertInventoryitems = async (i) => {
 
 // Function to insert a collection
 const insertCollection = async (c) => {
-  try {
-    await collectionsTable.insert(c);
-    console.log('Collection creation successful.');
+  try{
+    Collection.create(c,
+      {
+      }
+    ).then((resV) => {
+      console.log('shopify-webhook/collection/create || Created collection successfully');
+      console.log("TRACE collection/create webhook ends in collection.create()");
+    })
+    .catch((err) => {
+      console.log('shopify-webhook/collection/create', err.response?.data || err.stack || err.message || err.toString());
+    });
   } catch (error) {
     console.error('Error inserting collection:', error);
     throw error; // Re-throw the error for handling by the caller
@@ -113,14 +229,29 @@ const insertCollection = async (c) => {
 
 // Function to insert multiple products
 const insertManyProducts = async (p) => {
-  try {
-    await productsTable.insert(p);
-  } catch (error) {
+  try{
+    Product.bulkCreate(p,
+      {
+        ignoreDuplicates: true,
+        include: {
+          model: Variant,
+          as: 'variants',
+          required: true,
+        },
+      }
+    ).then((newProduct) => {
+      console.log('Bulk Product created...');
+    }).catch(err=> {
+      console.log('ERROR creating bulk product', err)
+    })
+    
+  }catch(error){
     console.error('Error inserting multiple products:', error);
     throw error; // Re-throw the error for handling by the caller
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert multiple variants
 const insertManyVariants = async (v) => {
   try {
@@ -133,9 +264,18 @@ const insertManyVariants = async (v) => {
 
 // Function to insert multiple inventory items
 const insertManyInventoryitems = async (i) => {
-  try {
-    await inventoryItemsTable.insert(i);
-  } catch (error) {
+  try{
+    InventoryItem.bulkCreate(i,
+      {
+        ignoreDuplicates: true,
+      }
+    ).then(() => {
+      console.log('Bulk Inventory item created...');
+    }).catch(err=> {
+      console.log('ERROR creating bulk inventory', err)
+    })
+    
+  }catch (error) {
     console.error('Error inserting multiple inventory items:', error);
     throw error; // Re-throw the error for handling by the caller
   }
@@ -143,14 +283,24 @@ const insertManyInventoryitems = async (i) => {
 
 // Function to insert multiple collections
 const insertManyCollections = async (c) => {
-  try {
-    await collectionsTable.insert(c);
+  try{
+    Collection.bulkCreate(c,
+      {
+        ignoreDuplicates: true,
+      }
+    ).then((newCollection) => {
+      console.log('Bulk Collection created...');
+    }).catch(err=> {
+      console.log('ERROR creating bulk collection', err)
+    })
+    
   } catch (error) {
     console.error('Error inserting multiple collections:', error);
     throw error; // Re-throw the error for handling by the caller
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve a product by ID
 const retrieveProduct = async (req, res, next) => {
     const query = `
@@ -168,6 +318,7 @@ const retrieveProduct = async (req, res, next) => {
   }
 }
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve a product UPATEDAT by ID
 const retrieveProductUpdatedAt = async (req, res, next) => {
   const query = `
@@ -185,18 +336,21 @@ try {
 }
 }
 
-
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve a variant by ID
 const retrieveVariant = async (req,res,next) => {
   const query = `
   SELECT * FROM ${datasetId}.variants where id=${req.params.id}`;
 
   try {
-    // Run the SQL query
-    const [rows] = await bigquery.query(query);
+  await Variant.findOne({where : { id : req.params.id }})
+  .then((rows) => {
+    res.send({variant:rows});
+  })
+
 
   //    return product
-      res.send({variant:rows});
+      
 
   } catch (error) {
     console.error('Error running query:', error);
@@ -206,7 +360,9 @@ const retrieveVariant = async (req,res,next) => {
 // Function to retrieve an inventory item by ID
 const retrieveInventoryItem = async (i_id) => {
   try {
-    const [inventoryItem] = await inventoryItemsTable.get(i_id);
+    const [inventoryItem] = await InventoryItem.findOne({where : {id : i_id}})
+
+    // const [inventoryItem] = await inventoryItemsTable.get(i_id);
     return inventoryItem;
   } catch (error) {
     console.error('Error retrieving inventory item:', error);
@@ -214,6 +370,7 @@ const retrieveInventoryItem = async (i_id) => {
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve a collection by ID
 const retrieveCollection = async (req,res,next)=> {
   const query = `
@@ -231,7 +388,7 @@ try {
 }
 };
 
-
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve many products
 const retrieveManyProducts = async (req, res, next) => {
     //const query = `
@@ -259,19 +416,50 @@ const retrieveManyProducts = async (req, res, next) => {
 
 // Function to retrieve many products with < 500
 const retrieveProductsforAI = async (req, res, next) => {
-  const query = `
-  SELECT id, title, body_html, webshop, vendor, tags
-  FROM (
-        SELECT *, ROW_NUMBER()
-                  OVER (PARTITION BY id, title) row_number
-        FROM ${datasetId}.products) 
-  WHERE row_number = 1 and LENGTH(body_html) < 500;`
-try {
-  // Run the SQL query
-  const [rows] = await bigquery.query(query);
-  //    return product
 
-  return rows;
+  console.log('called');
+  let p;
+  // 
+  var attributes = ['id', 'title', 'body_html', 'webshop', 'vendor', 'tags'];
+
+  try{
+    // Run query
+    await Product.findAndCountAll({
+    where:  sequelize.where(sequelize.fn('length', sequelize.col('body_html')), {
+      [Op.lt]: 500,
+    }),
+    ...(attributes ? { attributes } : undefined),
+    paranoid: false,
+    raw: true,
+    limit: 2,
+  })
+    .then(async ({ rows, count}) => {
+      // if (rows === null) {
+      //   console.log('No product found with <500 bodyHTML');
+      //   // next(nsew ValueNotFoundError(`Product ${id}`));
+      //   return;
+      // }
+      //let product = await rows
+      p= await rows;
+      
+      // systemLog('get-product ', `Get product ${product.id}`, 3);
+     // res.data = { orders: rows, totalCount: count };
+    })
+    return p;
+  // 
+  // const query = `
+  // SELECT id, title, body_html, webshop, vendor, tags
+  // FROM (
+  //       SELECT *, ROW_NUMBER()
+  //                 OVER (PARTITION BY id, title) row_number
+  //       FROM ${datasetId}.products) 
+  // WHERE row_number = 1 and LENGTH(body_html) < 500;`
+// try {
+//   // Run the SQL query
+//   const [rows] = await bigquery.query(query);
+//   //    return product
+
+//   return rows;
 
 } catch (error) {
   console.error('Error running query:', error);
@@ -300,7 +488,7 @@ try {
 }
 
 
-
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve many variants
 const retrieveManyVariants = async () => {
   try {
@@ -312,6 +500,7 @@ const retrieveManyVariants = async () => {
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve many inventory items
 const retrieveManyInventoryItems = async () => {
   try {
@@ -323,6 +512,7 @@ const retrieveManyInventoryItems = async () => {
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve many collections
 const retrieveManyCollections = async (req,res,next) => {
   const query = `
@@ -340,6 +530,7 @@ const retrieveManyCollections = async (req,res,next) => {
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 async function updateProduct(p_id, rowToUpdate) {
   try {
     // Retrieve existing table data (assuming ID uniquely identifies a row)
@@ -432,6 +623,7 @@ async function updateProduct(p_id, rowToUpdate) {
   }
 }
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 async function updateOrCreateVariant(rowToUpdate) {
   let variantRow = rowToUpdate.variants
   if (variantRow.length > 0) {
@@ -520,7 +712,7 @@ async function updateOrCreateVariant(rowToUpdate) {
   }
 }
 
-
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 async function updateVariant(v_id, rowToUpdate) {
   try {
     // Retrieve existing table data (assuming ID uniquely identifies a row)
@@ -590,13 +782,11 @@ async function updateVariant(v_id, rowToUpdate) {
  
 }
 
-
-
 // Function to update an inventory item by ID
 async function updateInventoryItem(i_id, rowToUpdate) {
   try {
       // Retrieve existing data
-      const existingData = await retrieveInventoryItem(i_id);
+      const existingData = await InventoryItem.findOne({where : {id : i_id}});
 
       if (!existingData) {
         console.error('No existing inventory found.');
@@ -606,7 +796,7 @@ async function updateInventoryItem(i_id, rowToUpdate) {
         const rowsToInsert = rowToUpdate;
 
         // Insert the modified data back into the table
-        await inventoryItemsTable.insert(rowsToInsert, { ignoreUnknownValues: true });
+        await existingData.update({...rowsToInsert});
         console.log('Inventory row updated successfully.');
       }
 
@@ -617,6 +807,7 @@ async function updateInventoryItem(i_id, rowToUpdate) {
   }
 }
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to update a collection by ID
 async function updateCollection(c_id, rowToUpdate) {
   try {
@@ -647,15 +838,31 @@ async function updateCollection(c_id, rowToUpdate) {
 
 // Function to insert an order
 const insertOrder = async (o) => {
-  try {
-    await ordersTable.insert(o);
-    console.log('Order creation successful.');
+  console.log(o[0])
+  try{
+    Order.create(o[0],
+      {
+        include: [{
+          model: OrderLineItem,
+          as: 'lineItems',
+        }],
+        returning: true,
+      }
+    ).then((resV) => {
+      console.log('shopify-webhook/orders/create || Created orders successfully');
+      console.log("TRACE order/create webhook ends in order.create()");
+    })
+    .catch((err) => {
+      console.log('shopify-webhook/order/create', err.response?.data || err.stack || err.message || err.toString());
+      console.log('errrrr', err);
+    });
   } catch (error) {
     console.error('Error inserting order:', JSON.stringify(error));
     throw error; // Re-throw the error for handling by the caller
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert an order line item
 const insertOrderLineItem = async (ol) => {
   try {
@@ -669,14 +876,89 @@ const insertOrderLineItem = async (ol) => {
 
 // Function to insert multiple orders
 const insertManyOrders = async (p) => {
+  console.log('starting insertManyOrders');
+  let a = [
+    [
+        {
+          id: 6069100806474,
+          created_at: '2024-05-15 01:32:44.337',
+          deleted_at: null,
+          updated_at: '2024-05-09T16:21:11+01:00',
+          closed_at: '2024-05-01T12:08:57+01:00',
+          customer_email: 'markymarkh@hotmail.com',
+          customer_phone: null,
+          note: null,
+          note_attributes: '[{"name":"__profitmetrics_ignore","value":"ignore"},{"name":"__profitmetrics_ct","value":"59cf23bf64b29827a3ed4e96ba0a931e"}]',
+          financial_status: 'paid',
+          payment_status: undefined,
+          currency: 'GBP',
+          priority: 1,
+          total_discounts: '131.01',
+          total_tax: '14.50',
+          total_duties: 0,
+          subtotal_price: '78.99',
+          total_price: '86.99',
+          total_outstanding: '0.00',
+          cancelled_at: null,
+          cancelled_reason: null,
+          fulfillment_status: 'fulfilled',
+          fulfillment_id: 5461031551306,
+          shopify_shipping_line: 'gb_fed_ex_private',
+          status: 'completed',
+          source: 'shopify',
+          webshop: 'teeshoppen-uk',
+          order_number: '#82610026',
+          source_url: undefined,
+          tags: 'Packed 01/05/2024 13:08:58',
+          customer_first_name: 'Mark',
+          customer_last_name: 'Hallett',
+          billing_first_name: 'Mark',
+          billing_last_name: 'Hallett',
+          billing_phone: '+447795466489',
+          billing_address_line_one: '16 Waters Edge',
+          billing_address_city: 'Warrington',
+          billing_address_province: 'England',
+          billing_address_country: 'United Kingdom',
+          billing_address_zip: 'WA4 6BQ',
+          address_first_name: 'Mark',
+          address_last_name: 'Hallett',
+          address_phone: '+447795466489',
+          address_line_one: '16 Waters Edge',
+          address_city: 'Warrington',
+          address_province: 'England',
+          address_country: 'United Kingdom',
+          address_zip: 'WA4 6BQ',
+          discount_applications: '[{"target_type":"line_item","type":"script","value":"43.67","value_type":"fixed_amount","allocation_method":"across","target_selection":"explicit","title":"Bundle discount","description":"Bundle discount"},{"target_type":"line_item","type":"script","value":"43.67","value_type":"fixed_amount","allocation_method":"across","target_selection":"explicit","title":"Bundle discount","description":"Bundle discount"},{"target_type":"line_item","type":"script","value":"43.67","value_type":"fixed_amount","allocation_method":"across","target_selection":"explicit","title":"Bundle discount","description":"Bundle discount"}]',
+          discount_codes: '[]',
+          lineItems: [Array]
+        },
+        []
+      ],
+      ]
+  // console.log(p);
   try {
-    await ordersTable.insert(p);
+    Order.bulkCreate(a,
+      {
+        ignoreDuplicates: true,
+        // include: {
+        //   model: OrderLineItem,
+        //   as: 'lineItems',
+        //   required: true,
+        //   ignoreDuplicates: true,
+        // },
+      }
+    ).then((newOrder) => {
+      console.log('Bulk orders created...');
+    }).catch(err=> {
+      console.log('ERROR creating bulk orders', err.message)
+    })
   } catch (error) {
     console.error('Error inserting multiple orders:', error);
     throw error; // Re-throw the error for handling by the caller
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert multiple orderLine ITEMS
 const insertManyOrderLineItems = async (p) => {
   try {
@@ -687,6 +969,7 @@ const insertManyOrderLineItems = async (p) => {
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve a order by ID
 const retrieveOrder = async (req, res, next) => {
   const query = `
@@ -704,6 +987,7 @@ try {
 }
 }
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve many orders
 const retrieveManyOrders = async (req, res, next) => {
   const query = `
@@ -721,6 +1005,7 @@ try {
 }
 }
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert a cost price monitoring entry
 const insertCostPrice = async (c) => {
   try {
@@ -731,7 +1016,7 @@ const insertCostPrice = async (c) => {
   }
 };
 
-
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve cost price monitoring entries with a limit
 const retrieveCostPrice = async (limit) => {
   try {
@@ -746,6 +1031,7 @@ const retrieveCostPrice = async (limit) => {
   }
 };
 
+// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve unique product webshops
 const getProductWebshop = async () => {
   try {
@@ -787,7 +1073,7 @@ export {
   retrieveManyInventoryItems,
   retrieveManyCollections,
   updateProduct,
-  updateDescription,
+  updateMetaField,
   updateVariant,
   updateOrCreateVariant,
   updateInventoryItem,
@@ -795,4 +1081,5 @@ export {
   insertCostPrice,
   retrieveCostPrice,
   getProductWebshop,
+  createMetaField
 };

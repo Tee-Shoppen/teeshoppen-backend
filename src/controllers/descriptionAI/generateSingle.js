@@ -1,6 +1,6 @@
 import openai from '../apis/chatgpt.js'
 import { subDomainMap } from '../utilities/shop-mapper.js'
-import { retrieveProductsforAI , insertDescription, retrieveProductsforAISingle} from '../../database/queries.js'
+import { insertDescription, retrieveProductsforAISingle, createMetaField} from '../../database/queries.js'
 // import {
 //   sql,
 //   products_tbl,
@@ -45,7 +45,6 @@ const htmlPrompt = (language, description) => `${productHtmlPrompt[language]}\n\
 const generateProductDescriptionSingle = async (id) => {
   // Retrieve products from database where description is null
   const productsFound = await retrieveProductsforAISingle(id)
-  console.log('productFound --------------', productsFound.length)
  if (productsFound.length === 0) return
   // For each product: Initialize items in Monday.com and Merge products with items
   for (const product of productsFound) {
@@ -68,6 +67,7 @@ const generateProductDescriptionSingle = async (id) => {
       
      let newProduct = {
       id: product.id,
+      webshop:product.webshop,
       title: product.title,
       body_html: product.body_html,
       status: 'Need to review',
@@ -76,14 +76,20 @@ const generateProductDescriptionSingle = async (id) => {
       category: 'Products',
       new_description: new_description,
       new_title : product.title,
-      new_seoDesc : aiseoDesc,
+      new_seo_desc : aiseoDesc,
       created_at : new Date(),
       updated_at : new Date(),
       language : language
     }
-    console.log(newProduct.id)
     await delete newProduct.body_html;
     await insertDescription(newProduct);
+    const details = {
+      id : product.id,
+      webshop : product.webshop,
+      desc : product.body_html,
+      title : product.title
+    }
+    await createMetaField(details);
   }
   // For each product: Generate description, Update description in shopify while updating status in Monday.com
   //const shopify = new Shopify(name, process.env[apiKey]!)

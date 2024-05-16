@@ -26,6 +26,7 @@ const productCreation = async (req) => {
     template_suffix: product.template_suffix,
     published_scope: product.published_scope,
     tags: product.tags,
+    variants: product.variants
   }
 
   const variantsMapped = product.variants.map((variant) => ({
@@ -83,9 +84,9 @@ const productCreation = async (req) => {
 
   
   await insertProduct(productMapped);
-  
-  if(product.body_html.length < 500) {
-    console.log(product.body_html.length, ' product.body_html.length')
+  console.log(product.body_html.length, ' product.body_html.length')
+
+  if(product.body_html.length > 500) {
     await generateProductDescriptionSingle(product.id);
   }
   await insertManyVariants(variantsMapped);

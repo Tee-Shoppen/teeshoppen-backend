@@ -1,5 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { getBigQueryClient } from "../../database/client.js";
+import { Collection } from "../../database/postgresdb.js";
+import { insertCollection } from "../../database/queries.js";
 const bigquery = getBigQueryClient();
 const datasetId = process.env.BIGQUERY_DATASET_ID;
 import collectionCreation from "./create.js";
@@ -13,17 +15,15 @@ const shopifyWebhook = async (req, res, next) => {
       console.log("TRACE collection/create webhook starts");
      // console.log("TRACE create new collection", data);
       res.sendStatus(200);
-      const existingCollection = `
-                SELECT count(*) FROM ${datasetId}.collections where id=${data.id}`;
             try {
                 // Run the SQL query
-                const count = await bigquery.query(existingCollection);
-                if (count > 0) {
-                  console.log('COLLECTION exists..')
-                  return;
-                }
-                console.log('CREATING COLLECTION..')
-                await collectionCreation(req);
+                // const count = await bigquery.query(existingCollection);
+                // if (count > 0) {
+                //   console.log('COLLECTION exists..')
+                //   return;
+                // }
+                // console.log('CREATING COLLECTION..')
+                await insertCollection(collectionCreation(req));
                 console.log("TRACE collection/create webhook ends");
                 return;
           
@@ -37,8 +37,15 @@ const shopifyWebhook = async (req, res, next) => {
       res.sendStatus(200);
             try {
                 // Run the SQL query
-                console.log('UPDATE WEBHOOK - CREATING NEW COLLECTION ROW..')
-                await collectionCreation(req);
+                console.log('UPDATE WEBHOOK - UPDATING COLLECTION ROW..')
+                //await collectionCreation(req);
+                let coll = await Collection.findOne({where : {id:req.body.id}})
+                if (!coll){
+                  console.log('NO EXISTING COLLECTION');
+                  return;
+                }
+                let newColl = collectionCreation(req);
+                coll.update({...newColl});
                 console.log("TRACE collection/create webhook ends");
                 return;
           

@@ -40,17 +40,17 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
             'x-server': true,
           },
     }).then((res) => {
-      returnObj.productVariantId = res.data.variant[0].id;
-      returnObj.productVariantTitle = res.data.variant[0].title;
-      returnObj.productId = res.data.variant[0].product_id;
-    }).catch((err) => null);
-    returnObj.productTitle = lineItem.title;
+      returnObj.product_variant_id = res.data.variant[0].id;
+      returnObj.product_variant_title = res.data.variant[0].title;
+      returnObj.product_id = res.data.variant[0].product_id;
+    }).catch((err) =>null);
+    returnObj.product_title = lineItem.title;
     returnObj.id=lineItem.id
-    returnObj.orderId=order.shopifyId
+    returnObj.order_id=order.id
 
     //console.log('lineItem', lineItem)
   } else {
-    console.log("create-from-shopify, PRODUCT_EXIST IS FALSE", JSON.stringify(lineItem,null,4));
+    console.log("create-from-shopify, PRODUCT DOES NOT EXIST, ORDER NOT SAVED, Order id : ",order.id );
     // await createCustomProduct(lineItem, order).then((res) => {
     //   returnObj.productVariantId = res.data.product.variants[0].id;
     //   returnObj.productVariantTitle = res.data.product.variants[0].title;
@@ -69,7 +69,7 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
   if (refunds.length > 0 ) {
     await refunds.find((o, i) => {
       if (o.line_item_id == lineItem.id ) {
-        returnObj.fulfillableQuantity = lineItem.fulfillable_quantity;
+        returnObj.fulfillable_quantity = lineItem.fulfillable_quantity;
         returnObj.quantity = lineItem.quantity == 0 ? 0 : lineItem.quantity - refunds[i].quantity;
         x = 1;
       }
@@ -80,18 +80,17 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
 
   if (x) {
     // returnObj.fulfillableQuantity = lineItem.fulfillable_quantity;
-    returnObj.fulfillmentService = lineItem.fulfillment_service;
-    returnObj.fulfillmentStatus = lineItem.fulfillment_status;
+    returnObj.fulfillment_service = lineItem.fulfillment_service;
+    returnObj.fulfillment_status = lineItem.fulfillment_status;
     //returnObj.allocatedQuantity = 0;
 
   } else {
 
-    returnObj.fulfillableQuantity = lineItem.fulfillable_quantity;
-    returnObj.fulfillmentService = lineItem.fulfillment_service;
-    returnObj.fulfillmentStatus = lineItem.fulfillment_status;
+    returnObj.fulfillable_quantity = lineItem.fulfillable_quantity;
+    returnObj.fulfillment_service = lineItem.fulfillment_service;
+    returnObj.fulfillment_status = lineItem.fulfillment_status;
     //returnObj.allocatedQuantity = 0;
     returnObj.quantity = lineItem.quantity;
-    //Haikal. Total_discount not always reliable. Use discount_allocations instead. original line is below
     //returnObj.discounts = lineItem.total_discount ?? 0.00;
 
   }
@@ -106,9 +105,9 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
     total_line_item_discount = Number(total_line_item_discount) + Number(item.amount);
   }
   returnObj.discounts = total_line_item_discount;
-  returnObj.discountAllocations = JSON.stringify(lineItem.discount_allocations);
-  returnObj.discountApplications = discountApps;
-  returnObj.discountCodes = discountCodes;
+  returnObj.discount_allocations = JSON.stringify(lineItem.discount_allocations);
+  returnObj.discount_applications = discountApps;
+  returnObj.discount_codes = discountCodes;
 
   returnObj.price = lineItem.price;
 
@@ -116,119 +115,148 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
   // returnObj.refundedAt = lineItem.;
   // returnObj.refundedAmount = lineItem.;
   returnObj.weight = lineItem.grams;
-  returnObj.weightUnit = 'grams';
-  returnObj.createdAt = orderCreated;
-  returnObj.updatedAt = orderUpdated;
-  returnObj.shopifyId = lineItem.id;
+  returnObj.weight_unit = 'grams';
+  returnObj.created_at = orderCreated;
+  returnObj.updated_at = orderUpdated;
+  returnObj.shopify_id = lineItem.id;
   if (['completed', 'cancelled', 'refunded'].includes(orderStatus)) {
     returnObj.status = orderStatus;
     return [returnObj, null];
   }
   if ('productVariantId' in returnObj && orderFinancialStatus === 'paid') {
     if (returnObj.status === "received") returnObj.status = "pending purchase";
-    return [returnObj, returnObj.productVariantId];
+    return [returnObj, returnObj.product_variant_dd];
   }
   return [returnObj, null];
 };
 
-async function createOrderModel(order,webshop) {
-
+async function createOrderModel(iincoming,webshop) {
+  let order = iincoming; 
   let order_source = '';
   if (order.source = 'shopify') {
     order_source = 'shopify'
   }
-    let risk = '';
   
    //check if there is a fulfillment
    let fulfillmentId = null
    if(order.fulfillments.length > 0) {
-     fulfillmentId = order.fulfillments[order.fulfillments.length-1].id
+    fulfillmentId = order.fulfillments[order.fulfillments.length-1].id
    }
  
   const reallocateVariants = [];
 
  const [status, fulfillmentStatus] = mapShopifyResponseToWareOrderStatuses(order.fulfillment_status, order.financial_status);
   const orderModel = {
-    shopifyId: order.id,
+    id: order.id,
     createdAt: order.created_at,
     deletedAt: null,
     updatedAt: order.updated_at || order.created_at,
-    closedAt: order.closed_at,
-    customerEmail: order.email,
-    customerPhone: order.phone,
+    closed_at: order.closed_at,
+    customer_email: order.email,
+    customer_phone: order.phone,
     note: order.note,
-    noteAttributes : JSON.stringify(order.note_attributes),
-    financialStatus: order.financial_status,
-    paymentStatus: order.payment_status,
+    note_attributes: JSON.stringify(order.note_attributes),
+    financial_status: order.financial_status,
+    payment_status: order.payment_status,
     currency: order.currency,
     priority: 1,
-    totalDiscounts: order.total_discounts ?? 0.00,
-    totalTax: order.total_tax ?? 0.00,
-    totalDuties: order.original_total_duties_set?.shop_money?.amount ?? 0.00,
-    subtotalPrice: order.subtotal_price ?? 0.00,
-    totalPrice: order.total_price ?? 0.00,
-    totalOutstanding: order.total_outstanding ?? 0.00,
-    cancelledAt: order.cancelled_at,
-    cancelledReason: order.cancel_reason,
-    fulfillmentStatus:order.fulfillment_status,
-    fulfillmentId,
-    shopifyShippingLine: order.shipping_lines?.reduce((prev, curr) => (prev.concat(curr.code)), "") ?? null,
-    status,
-    source: order_source,
-    webshop: webshop,
-    orderNumber: order.name,
-    sourceUrl: order.source_url,
-    // risk : risk
+    total_discounts: order.total_discounts ?? 0.00,
+    total_tax: order.total_tax ?? 0.00,
+    total_duties: order.original_total_duties_set?.shop_money?.amount ?? 0.00,
+    subtotal_price: order.subtotal_price ?? 0.00,
+    total_price: order.total_price ?? 0.00,
+    total_outstanding: order.total_outstanding ?? 0.00,
+    cancelled_at: order.cancelled_at,
+    cancelled_reason: order.cancel_reason,
+    fulfillment_status: order.fulfillment_status,
+    fulfillment_id: fulfillmentId, // Assuming fulfillmentId is already defined
+    shopify_shipping_line: order.shipping_lines?.reduce((prev, curr) => (prev.concat(curr.code)), "") ?? null,
+    status: status,  // Assuming status is already defined
+    source: order_source,  // Assuming order_source is already defined
+    webshop: webshop,  // Assuming webshop is already defined
+    order_number: order.name,
+    source_url: order.source_url,
+    // risk: risk  // Assuming risk is already defined
+    // id: order.id,
+    // createdAt: order.created_at,
+    // deletedAt: null,
+    // updatedAt: order.updated_at || order.created_at,
+    // closedAt: order.closed_at,
+    // customerEmail: order.email,
+    // customerPhone: order.phone,
+    // note: order.note,
+    // noteAttributes : JSON.stringify(order.note_attributes),
+    // financialStatus: order.financial_status,
+    // paymentStatus: order.payment_status,
+    // currency: order.currency,
+    // priority: 1,
+    // totalDiscounts: order.total_discounts ?? 0.00,
+    // totalTax: order.total_tax ?? 0.00,
+    // totalDuties: order.original_total_duties_set?.shop_money?.amount ?? 0.00,
+    // subtotalPrice: order.subtotal_price ?? 0.00,
+    // totalPrice: order.total_price ?? 0.00,
+    // totalOutstanding: order.total_outstanding ?? 0.00,
+    // cancelledAt: order.cancelled_at,
+    // cancelledReason: order.cancel_reason,
+    // fulfillmentStatus:order.fulfillment_status,
+    // fulfillmentId,
+    // //shopifyShippingLine: order.shipping_lines?.reduce((prev, curr) => (prev.concat(curr.code)), "") ?? null,
+    // status,
+    // source: order_source,
+    // webshop: webshop,
+    // orderNumber: order.name,
+    // sourceUrl: order.source_url,
+    // // risk : risk
   };
 
   if ((order.tags ?? '') !== '') {
     orderModel.tags = order.tags.split(',').map((tg) => tg.trim()).toString();
   }
   if (order.customer) {
-    orderModel.customerFirstName = order.customer.first_name;
-    orderModel.customerLastName = order.customer.last_name;
+    orderModel.customer_first_name = order.customer.first_name;
+    orderModel.customer_last_name = order.customer.last_name;
   }
 
   if (order.billing_address) {
-    orderModel.billingFirstName = order.billing_address.first_name;
-    orderModel.billingLastName = order.billing_address.last_name;
-    orderModel.billingPhone = order.billing_address.phone;
-    orderModel.billingAddressLineOne = order.billing_address.address1;
+    orderModel.billing_first_name = order.billing_address.first_name;
+    orderModel.billing_last_name = order.billing_address.last_name;
+    orderModel.billing_phone = order.billing_address.phone;
+    orderModel.billing_address_line_one = order.billing_address.address1;
     if (order.billing_address.address2) {
-      orderModel.billingAddressLineTwo = order.billing_address.address2;
+      orderModel.billing_address_line_two = order.billing_address.address2;
     }
-    orderModel.billingAddressCity = order.billing_address.city;
-    orderModel.billingAddressProvince = order.billing_address.province;
-    orderModel.billingAddressCountry = order.billing_address.country;
-    orderModel.billingAddressZip = order.billing_address.zip;
+    orderModel.billing_address_city = order.billing_address.city;
+    orderModel.billing_address_province = order.billing_address.province;
+    orderModel.billing_address_country = order.billing_address.country;
+    orderModel.billing_address_zip = order.billing_address.zip;
     
     if (order.billing_address.company)
-      orderModel.billingCompany = order.billing_address.company;
+      orderModel.billing_company = order.billing_address.company;
   }
   
   if (order.shipping_address) {
-    orderModel.addressFirstName = order.shipping_address.first_name;
-    orderModel.addressLastName = order.shipping_address.last_name;
-    orderModel.addressPhone = order.shipping_address.phone;
-    orderModel.addressLineOne = order.shipping_address.address1;
+    orderModel.address_first_name = order.shipping_address.first_name;
+    orderModel.address_last_name = order.shipping_address.last_name;
+    orderModel.address_phone = order.shipping_address.phone;
+    orderModel.address_line_one = order.shipping_address.address1;
     if (order.shipping_address.address2) {
-      orderModel.addressLineTwo = order.shipping_address.address2;
+      orderModel.address_line_two = order.shipping_address.address2;
     }
-    orderModel.addressCity = order.shipping_address.city;
-    orderModel.addressProvince = order.shipping_address.province;
-    orderModel.addressCountry = order.shipping_address.country;
-    orderModel.addressZip = order.shipping_address.zip;
+    orderModel.address_city = order.shipping_address.city;
+    orderModel.address_province = order.shipping_address.province;
+    orderModel.address_country = order.shipping_address.country;
+    orderModel.address_zip = order.shipping_address.zip;
 
     if (order.shipping_address.company)
-      orderModel.companyName = order.shipping_address.company;
+      orderModel.company_name = order.shipping_address.company;
     
   }
   const discountApps = JSON.stringify(order.discount_applications);
   const discountCodes = JSON.stringify(order.discount_codes);
 
   //Discounts
-  orderModel.discountApplications = discountApps; 
-  orderModel.discountCodes = discountCodes;
+  orderModel.discount_applications = discountApps; 
+  orderModel.discount_codes = discountCodes;
 
   // let refunds = order.refunds ? order.refunds : []
   const refundss_array = order.refunds ? order.refunds.flatMap(x => x.refund_line_items.map(y => y)) : []

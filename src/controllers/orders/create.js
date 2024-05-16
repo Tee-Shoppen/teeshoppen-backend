@@ -13,13 +13,13 @@ const orderCreation = async (req) => {
 
     let lineItemsOnly = model.lineItems;
     await delete model.lineItems;
-    await insertOrder(model);
+    // await insertOrder(model);
     
-    if (lineItemsOnly.length > 0) {
-       lineItemsOnly.forEach( async lineItem => {
-          await insertOrderLineItem(lineItem)
-      });
-    }
+    // if (lineItemsOnly.length > 0) {
+    //    lineItemsOnly.forEach( async lineItem => {
+    //       await insertOrderLineItem(lineItem)
+    //   });
+    // }
   
     console.log(
       'Order Creation done.'

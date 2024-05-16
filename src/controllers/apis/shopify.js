@@ -82,5 +82,18 @@ export default class Shopify extends Apis {
   retrieveSingleCollection(collection_id, params) {
     return this.api.get(`/collections/${collection_id}.json`, { params })
   }
+
+  //metafields
+  retrieveProductMetafield(product_id) {
+    return this.api.get(`/products/${product_id}/metafields.json`)
+  }
+
+  createProductMetafield(product_id, params) {
+    return this.api.post(`/products/${product_id}/metafields.json`, params)
+  }
+
+  updateProductMetafield(ids, params) {
+    return this.api.put(`/products/${ids.product_id}/metafields/${ids.meta_id}.json`, params)
+  }
 }
 

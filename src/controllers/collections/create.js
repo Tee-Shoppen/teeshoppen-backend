@@ -22,11 +22,7 @@ const collectionCreation = async (req) => {
     sort_order: collection.sort_order,
   }
 
- await insertCollection(collectionMapped)
-
- console.log(
-  'Collection creation done.'
-)
+    return collectionMapped;
  }
 
 export default collectionCreation

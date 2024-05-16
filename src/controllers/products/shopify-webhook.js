@@ -1,13 +1,9 @@
 /* eslint-disable no-underscore-dangle */
-import dotenv from "dotenv";
-import bodyParser from 'body-parser';
-import { getBigQueryClient } from "../../database/client.js";
-const bigquery = getBigQueryClient();
-const datasetId = process.env.BIGQUERY_DATASET_ID;
-import { insertProduct, insertManyVariants, insertManyInventoryitems, updateProduct, updateOrCreateVariant } from '../../database/queries.js'
-import { domainToSubDomain,subDomainMap } from '../utilities/shop-mapper.js'
-import Shopify from '../apis/shopify.js'
-import productCreation from "./create.js";
+import { insertProduct, insertManyInventoryitems } from '../../database/queries.js'
+import { Product } from "../../database/postgresdb.js";
+import createProductModel from "./create-from-shopify.js";
+import { putProductIncludesVariants } from './product-service.js';
+import generateProductDescriptionSingle from '../descriptionAI/generateSingle.js';
 
 
 const shopifyWebhook = async (req, res, next) => {
@@ -17,25 +13,21 @@ const shopifyWebhook = async (req, res, next) => {
   switch (topic) {
     case 'products/create': {
       console.log("TRACE product/create webhook starts");
-     // console.log("TRACE create new product", data);
       res.sendStatus(200);
-      const existingProduct = `
-                SELECT count(*) FROM ${datasetId}.products where id=${data.id}`;
-            try {
-                // Run the SQL query
-                const count = await bigquery.query(existingProduct);
-                if (count > 0) {
-                  console.log('PRODUCT exists..')
-                  return;
-                }
-                console.log('CREATING PRODUCT..')
-                await productCreation(req);
-                console.log("TRACE product/create webhook ends");
-                return;
-          
-            } catch (error) {
-                console.error('shopify-webhook/products/create - Error running query:', error);
-            }
+      const existingProduct = await Product.findOne({ where: { id: data.id.toString() } });
+      if (existingProduct) {
+        return;
+      }
+      console.log('CREATING PRODUCT..')
+      let mapped = await createProductModel(req);
+      await insertProduct(mapped);
+      await insertManyInventoryitems(mapped.inventory);
+      if(mapped.body_html.length > 500) {
+        await generateProductDescriptionSingle(product.id);
+      }
+      console.log("TRACE product/create webhook ends");
+      return;
+      
        
     }
     case 'products/update': {
@@ -45,8 +37,11 @@ const shopifyWebhook = async (req, res, next) => {
       res.sendStatus(200);
             try {
                 // Run the SQL query
-                console.log('UPDATE WEBHOOK - CREATING NEW PRODUCT ROW..')
-                await productCreation(req);
+                console.log('UPDATE WEBHOOK - UPDATING PRODUCT ROW..')
+                //await productCreation(req);
+                let mapped = await createProductModel(req);
+                await putProductIncludesVariants(mapped);
+                
                 console.log("TRACE product/create webhook ends");
                 return;
           

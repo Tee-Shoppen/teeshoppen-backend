@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import bodyParser from 'body-parser'
 import { catchAsync } from '../controllers/utilities/utils.js';
 import productCreation from '../controllers/products/create.js';
-import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct, retrieveProductUpdatedAt, updateDescription} from '../database/queries.js';
+import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct, retrieveProductUpdatedAt, updateMetaField, retrieveProductsforAI} from '../database/queries.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../controllers/products/swagger.json' assert { type: "json" };
 import express from 'express';
@@ -58,11 +58,12 @@ productsRouter.get('/:id', verify, catchAsync(retrieveProduct));
 productsRouter.get('/updated/:id', verify, catchAsync(retrieveProductUpdatedAt));
 
 //
-productsRouter.post('/create', verify, catchAsync(productCreation));
+//productsRouter.post('/create', verify, catchAsync(productCreation));
 productsRouter.post('/update', verify,catchAsync(updateProduct));
 productsRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
 productsRouter.post('/generate-desc', verify, catchAsync(generateProductDescription));
-productsRouter.post('/update-desc/:id', verify, catchAsync(updateDescription));
+productsRouter.post('/update-desc/:id', verify, catchAsync(updateMetaField));
+productsRouter.post('/retrieve', verify, catchAsync(retrieveProductsforAI));
 
 //variants
 productsRouter.get('/variant/:id', verify, catchAsync(retrieveVariant));
