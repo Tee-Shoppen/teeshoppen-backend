@@ -27,23 +27,15 @@ async function handleCreateOrders(orders,webshop) {
   console.log(orders.length,'FETCHING ORDERS IN BACKEND...');
   const orderList = [];
   // await insertManyOrders(orderList);
-  for (let p = 0; p < 1; p += 1) {
+  for (let p = 0; p < orders.length; p += 1) {
     // console.log(orders[p]);
      await orderList.push(await createOrderModel(orders[p],webshop));
   }
-  await Promise.all(orderList)
-  .then(async ({...processedOrders}) => {
-    console.log(processedOrders);
-    Order.bulkCreate(processedOrders, {
-      include :{
-        model : OrderLineItem,
-        as : 'lineItems'
-      },
-      returning : true,
-    })
+  await Promise.all(...orderList)
+  .then(async (processedOrders) => {
+    await insertManyOrders(processedOrders);
   })
   .catch((err) => {
-    console.log('-----------------',processedOrders )
     console.log('initialize-orders', err.response?.data || err.stack || err.message || err.toString());
   });
   // let x=0;

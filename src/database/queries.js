@@ -336,18 +336,13 @@ try {
 }
 }
 
-// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to retrieve a variant by ID
 const retrieveVariant = async (req,res,next) => {
-  const query = `
-  SELECT * FROM ${datasetId}.variants where id=${req.params.id}`;
-
   try {
   await Variant.findOne({where : { id : req.params.id }})
   .then((rows) => {
     res.send({variant:rows});
   })
-
 
   //    return product
       
@@ -876,76 +871,17 @@ const insertOrderLineItem = async (ol) => {
 
 // Function to insert multiple orders
 const insertManyOrders = async (p) => {
-  console.log('starting insertManyOrders');
-  let a = [
-    [
-        {
-          id: 6069100806474,
-          created_at: '2024-05-15 01:32:44.337',
-          deleted_at: null,
-          updated_at: '2024-05-09T16:21:11+01:00',
-          closed_at: '2024-05-01T12:08:57+01:00',
-          customer_email: 'markymarkh@hotmail.com',
-          customer_phone: null,
-          note: null,
-          note_attributes: '[{"name":"__profitmetrics_ignore","value":"ignore"},{"name":"__profitmetrics_ct","value":"59cf23bf64b29827a3ed4e96ba0a931e"}]',
-          financial_status: 'paid',
-          payment_status: undefined,
-          currency: 'GBP',
-          priority: 1,
-          total_discounts: '131.01',
-          total_tax: '14.50',
-          total_duties: 0,
-          subtotal_price: '78.99',
-          total_price: '86.99',
-          total_outstanding: '0.00',
-          cancelled_at: null,
-          cancelled_reason: null,
-          fulfillment_status: 'fulfilled',
-          fulfillment_id: 5461031551306,
-          shopify_shipping_line: 'gb_fed_ex_private',
-          status: 'completed',
-          source: 'shopify',
-          webshop: 'teeshoppen-uk',
-          order_number: '#82610026',
-          source_url: undefined,
-          tags: 'Packed 01/05/2024 13:08:58',
-          customer_first_name: 'Mark',
-          customer_last_name: 'Hallett',
-          billing_first_name: 'Mark',
-          billing_last_name: 'Hallett',
-          billing_phone: '+447795466489',
-          billing_address_line_one: '16 Waters Edge',
-          billing_address_city: 'Warrington',
-          billing_address_province: 'England',
-          billing_address_country: 'United Kingdom',
-          billing_address_zip: 'WA4 6BQ',
-          address_first_name: 'Mark',
-          address_last_name: 'Hallett',
-          address_phone: '+447795466489',
-          address_line_one: '16 Waters Edge',
-          address_city: 'Warrington',
-          address_province: 'England',
-          address_country: 'United Kingdom',
-          address_zip: 'WA4 6BQ',
-          discount_applications: '[{"target_type":"line_item","type":"script","value":"43.67","value_type":"fixed_amount","allocation_method":"across","target_selection":"explicit","title":"Bundle discount","description":"Bundle discount"},{"target_type":"line_item","type":"script","value":"43.67","value_type":"fixed_amount","allocation_method":"across","target_selection":"explicit","title":"Bundle discount","description":"Bundle discount"},{"target_type":"line_item","type":"script","value":"43.67","value_type":"fixed_amount","allocation_method":"across","target_selection":"explicit","title":"Bundle discount","description":"Bundle discount"}]',
-          discount_codes: '[]',
-          lineItems: [Array]
-        },
-        []
-      ],
-      ]
   // console.log(p);
   try {
-    Order.bulkCreate(a,
+    Order.bulkCreate(p,
       {
         ignoreDuplicates: true,
-        // include: {
-        //   model: OrderLineItem,
-        //   as: 'lineItems',
-        //   required: true,
-        //   ignoreDuplicates: true,
-        // },
+        include: {
+          model: OrderLineItem,
+          as: 'lineItems',
+          required: true,
+          ignoreDuplicates: true,
+        },
       }
     ).then((newOrder) => {
       console.log('Bulk orders created...');

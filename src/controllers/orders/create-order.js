@@ -34,23 +34,29 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
   };
 
   if (lineItem.product_exists) {
-    //let l = `${process.env.NODE_ENV=='development'?process.env.ROOT_URL:process.env.LIVE_URL}/api/products/variant/${lineItem.variant_id}`
+    let l = `${process.env.NODE_ENV=='development'?process.env.ROOT_URL:process.env.LIVE_URL}/api/products/variant/${lineItem.variant_id}`
     await axios.get(`${process.env.NODE_ENV=='development'?process.env.ROOT_URL:process.env.LIVE_URL}/api/products/variant/${lineItem.variant_id}`, {
         headers: {
             'x-server': true,
           },
-    }).then((res) => {
-      returnObj.product_variant_id = res.data.variant[0].id;
-      returnObj.product_variant_title = res.data.variant[0].title;
-      returnObj.product_id = res.data.variant[0].product_id;
-    }).catch((err) =>null);
-    returnObj.product_title = lineItem.title;
+    }).then(async(res) => {
+      
+      returnObj.product_variant_id = res.data.variant.id;
+      returnObj.product_variant_title = res.data.variant.title;
+      returnObj.product_id = res.data.variant.product_id;
+     
+    }).catch((err) =>{
+      console.log('no value', err)
+    });
     returnObj.id=lineItem.id
+    returnObj.product_title = lineItem.title;
     returnObj.order_id=order.id
 
-    //console.log('lineItem', lineItem)
   } else {
-    console.log("create-from-shopify, PRODUCT DOES NOT EXIST, ORDER NOT SAVED, Order id : ",order.id );
+    console.log("create-from-shopify, PRODUCT DOES NOT EXIST in DB,Order id : ",order.id );
+    returnObj.id=lineItem.id
+    returnObj.product_title = lineItem.title;
+    returnObj.order_id=order.id
     // await createCustomProduct(lineItem, order).then((res) => {
     //   returnObj.productVariantId = res.data.product.variants[0].id;
     //   returnObj.productVariantTitle = res.data.product.variants[0].title;
@@ -274,8 +280,7 @@ async function createOrderModel(iincoming,webshop) {
   });
 
   orderModel.lineItems = lineItems;
-  
-  const shippingLines = [];
+  // const shippingLines = [];
 
 //   for(let b=0; b < order.shipping_lines.length; b++){
 //     const line = createShippingLine(order.shipping_lines[b], order.created_at, order.updated_at, order.name, discountApps, discountCodes);    
@@ -284,7 +289,7 @@ async function createOrderModel(iincoming,webshop) {
    
 //   orderModel.shippingLines = shippingLines;
 
-  return [orderModel, reallocateVariants];
+  return [orderModel];
 }
 
 function sleep(ms) {
