@@ -283,20 +283,20 @@ const parseCollectionsToDatabase = (webshop, collectionsDownloaded) => {
 }
 
 // Parse to Database
-const parseOrdersToDatabase = async (webshop, ordersDownloaded) => {
+// const parseOrdersToDatabase = async (webshop, ordersDownloaded) => {
 
-    return{
-        orders :  await ordersDownloaded.map(async order => {
-               await createOrderModel(order,webshop)
+//     return{
+//         orders :  await ordersDownloaded.map(async order => {
+//                await createOrderModel(order,webshop)
         
-        }),
-        orderLineItems : await ordersDownloaded.map(async order => {
-            let li = await createOrderModel(order,webshop)
-            li.lineItems
-        }),
-    }
+//         }),
+//         orderLineItems : await ordersDownloaded.map(async order => {
+//             let li = await createOrderModel(order,webshop)
+//             li.lineItems
+//         }),
+//     }
 
-  }
+//   }
 
 // Migration
 const all = async (subDomain) => {
@@ -441,7 +441,6 @@ const inventoryItems = async (subDomain) => {
     variantsDownloaded,
     inventoryItemsDownloaded
   )
-  console.log(toDatabaseInventoryItems);
 
   //  // Insert
   const b3inventoryItems = createProgressBar(capitalize(`Inserted ${name} Inventory Items`)).single

@@ -11,12 +11,12 @@ module.exports = {
         '"webshop" VARCHAR(255) NOT NULL, ' +
         '"cost" NUMERIC NOT NULL, ' +   // Assuming cost represents a monetary value
         '"country_code_of_origin" VARCHAR(255), ' +
-        '"country_harmonized_system_codes" JSONB NOT NULL DEFAULT \'[]\', ' +  // Using JSONB for flexible data storage
+        '"country_harmonized_system_codes" JSONB DEFAULT \'[]\', ' +  // Using JSONB for flexible data storage
         '"created_at" TIMESTAMP NOT NULL, ' +
         '"deleted_at" TIMESTAMP, ' +
         '"harmonized_system_code" BIGINT, ' +  // Adjust if HS code is a string
         '"province_code_of_origin" VARCHAR(255), ' +
-        '"sku" VARCHAR(255) NOT NULL, ' +
+        '"sku" VARCHAR(255), ' +
         '"tracked" BOOLEAN, ' +
         '"updated_at" TIMESTAMP NOT NULL, ' +
         '"requires_shipping" BOOLEAN' +

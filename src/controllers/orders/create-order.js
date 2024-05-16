@@ -35,25 +35,29 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
 
   if (lineItem.product_exists) {
     let l = `${process.env.NODE_ENV=='development'?process.env.ROOT_URL:process.env.LIVE_URL}/api/products/variant/${lineItem.variant_id}`
+    //console.log(l);
     await axios.get(`${process.env.NODE_ENV=='development'?process.env.ROOT_URL:process.env.LIVE_URL}/api/products/variant/${lineItem.variant_id}`, {
         headers: {
             'x-server': true,
           },
     }).then(async(res) => {
-      
+      if(res){
+        console.log('--------------res', res.data.variant.id);
+      }
       returnObj.product_variant_id = res.data.variant.id;
       returnObj.product_variant_title = res.data.variant.title;
       returnObj.product_id = res.data.variant.product_id;
      
     }).catch((err) =>{
-      console.log('no value', err)
+      console.log(`no value!!!, ERROR variant id ${lineItem.variant_id}`)
+      return;
     });
     returnObj.id=lineItem.id
     returnObj.product_title = lineItem.title;
     returnObj.order_id=order.id
 
   } else {
-    console.log("create-from-shopify, PRODUCT DOES NOT EXIST in DB,Order id : ",order.id );
+    console.log("create-from-shopify, PRODUCT DOES NOT EXIST in DB,Order id : ",order.id + 'variant id ', lineItem.variant_id);
     returnObj.id=lineItem.id
     returnObj.product_title = lineItem.title;
     returnObj.order_id=order.id
@@ -289,7 +293,7 @@ async function createOrderModel(iincoming,webshop) {
    
 //   orderModel.shippingLines = shippingLines;
 
-  return [orderModel];
+  return orderModel;
 }
 
 function sleep(ms) {

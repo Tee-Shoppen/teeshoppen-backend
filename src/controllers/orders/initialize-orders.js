@@ -26,15 +26,20 @@ const domainInformation = (subDomain) => {
 async function handleCreateOrders(orders,webshop) {
   console.log(orders.length,'FETCHING ORDERS IN BACKEND...');
   const orderList = [];
+  console.log('HANDLE', orders.length);
   // await insertManyOrders(orderList);
   for (let p = 0; p < orders.length; p += 1) {
     // console.log(orders[p]);
      await orderList.push(await createOrderModel(orders[p],webshop));
   }
-  await Promise.all(...orderList)
-  .then(async (processedOrders) => {
-    await insertManyOrders(processedOrders);
-  })
+  await Promise.all(orderList)
+    .then(async (processedOrders) => Order.bulkCreate(processedOrders, {
+      include: {
+        model: OrderLineItem,
+        as: 'lineItems',
+      },
+      returning: true,
+    }))
   .catch((err) => {
     console.log('initialize-orders', err.response?.data || err.stack || err.message || err.toString());
   });
@@ -64,7 +69,8 @@ async function initializeOrders(subDomain) {
   let startTime = new Date();
   let nextLinkExist;
 
-  for (let page = 0; page < 1; page += 1) {
+  for (let page = 0; page < 100000; page += 1) {
+    console.log('start');
     nextLinkExist = false;
     // eslint-disable-next-line no-await-in-loop
     await axios.get(url, {
@@ -88,7 +94,9 @@ async function initializeOrders(subDomain) {
           const baseLinks = svRes.headers.link.split(', ');
           for (let i = 0; i < baseLinks.length; i += 1) {
             const links = baseLinks[i].split('; ');
+           console.log('links[1]', links[1]);
             if (links[1] === 'rel="next"') {
+              console.log('------------continue');
               url = links[0].slice(1, -1);
               nextLinkExist = true;
             }

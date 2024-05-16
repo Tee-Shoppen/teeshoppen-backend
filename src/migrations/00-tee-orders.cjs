@@ -7,17 +7,17 @@ module.exports = {
         .then(() => queryInterface.sequelize.query(
             'CREATE TABLE "orders"."orders" (' +
             '"id" BIGINT PRIMARY KEY NOT NULL, ' +
-            '"address_district" VARCHAR(255), ' +
-            '"billing_district" VARCHAR(255), ' +
-            '"customer_email" VARCHAR(255), ' +
-            '"customer_phone" VARCHAR(255), ' +
-            '"customer_first_name" VARCHAR(255), ' +
-            '"customer_last_name" VARCHAR(255), ' +
-            '"note" VARCHAR(255), ' +
+            '"address_district" TEXT, ' +
+            '"billing_district" TEXT, ' +
+            '"customer_email" TEXT, ' +
+            '"customer_phone" TEXT, ' +
+            '"customer_first_name" TEXT, ' +
+            '"customer_last_name" TEXT, ' +
+            '"note" TEXT, ' +
             '"note_attributes" TEXT, ' +  // Assuming note_attributes is complex text data
-            '"financial_status" VARCHAR(255), ' +
-            '"payment_status" VARCHAR(255), ' +
-            '"currency" VARCHAR(255) , ' +
+            '"financial_status" TEXT, ' +
+            '"payment_status" TEXT, ' +
+            '"currency" TEXT , ' +
             '"total_discounts" DOUBLE PRECISION, ' +
             '"total_duties" DOUBLE PRECISION, ' +
             '"total_tax" DOUBLE PRECISION, ' +
@@ -30,40 +30,40 @@ module.exports = {
             '"closed_at" TIMESTAMP, ' +
             '"confirmed_at" TIMESTAMP, ' +
             '"cancelled_at" TIMESTAMP, ' +
-            '"cancelled_reason" VARCHAR(255), ' +
-            '"address_first_name" VARCHAR(255), ' +
-            '"address_last_name" VARCHAR(255), ' +
-            '"address_phone" VARCHAR(255), ' +
-            '"address_line_one" VARCHAR(255), ' +
-            '"address_line_two" VARCHAR(255), ' +
-            '"address_city" VARCHAR(255), ' +
-            '"address_province" VARCHAR(255), ' +
-            '"address_country" VARCHAR(255), ' +
-            '"address_zip" VARCHAR(255), ' +
-            '"billing_first_name" VARCHAR(255) , ' +
-            '"billing_last_name" VARCHAR(255) , ' +
-            '"billing_phone" VARCHAR(255), ' +
-            '"billing_address_line_one" VARCHAR(255) , ' +
-            '"billing_address_line_two" VARCHAR(255), ' +
-            '"billing_address_city" VARCHAR(255) , ' +
-            '"billing_address_province" VARCHAR(255), ' +
-            '"billing_address_country" VARCHAR(255) , ' +
-            '"billing_address_zip" VARCHAR(255) , ' +
-            '"billing_company" VARCHAR(255), ' +
-            '"company_name" VARCHAR(255), ' +
+            '"cancelled_reason" TEXT, ' +
+            '"address_first_name" TEXT, ' +
+            '"address_last_name" TEXT, ' +
+            '"address_phone" TEXT, ' +
+            '"address_line_one" TEXT, ' +
+            '"address_line_two" TEXT, ' +
+            '"address_city" TEXT, ' +
+            '"address_province" TEXT, ' +
+            '"address_country" TEXT, ' +
+            '"address_zip" TEXT, ' +
+            '"billing_first_name" TEXT , ' +
+            '"billing_last_name" TEXT , ' +
+            '"billing_phone" TEXT, ' +
+            '"billing_address_line_one" TEXT , ' +
+            '"billing_address_line_two" TEXT, ' +
+            '"billing_address_city" TEXT , ' +
+            '"billing_address_province" TEXT, ' +
+            '"billing_address_country" TEXT , ' +
+            '"billing_address_zip" TEXT , ' +
+            '"billing_company" TEXT, ' +
+            '"company_name" TEXT, ' +
             '"discount_applications" TEXT, ' +  // Assuming discount_applications is complex text data
             '"discount_codes" JSONB, ' +  // Using JSONB for flexible storage
-            '"fulfillment_status" VARCHAR(255), ' +
-            '"fulfillment_id" VARCHAR(255), ' +
-            '"tags" VARCHAR(255), ' +
-            '"status" VARCHAR(255) , ' +
-            '"order_number" VARCHAR(255), ' +
-            '"source" VARCHAR(255), ' +
-            '"webshop" VARCHAR(255) NOT NULL, ' +
+            '"fulfillment_status" TEXT, ' +
+            '"fulfillment_id" TEXT, ' +
+            '"tags" TEXT, ' +
+            '"status" TEXT , ' +
+            '"order_number" TEXT, ' +
+            '"source" TEXT, ' +
+            '"webshop" TEXT NOT NULL, ' +
             '"priority" INTEGER, ' +  // Assuming priority is an integer
-            '"shopify_shipping_line" VARCHAR(255), ' +
-            '"tracking_number" VARCHAR(255), ' +
-            '"source_url" VARCHAR(255)' +
+            '"shopify_shipping_line" TEXT, ' +
+            '"tracking_number" TEXT, ' +
+            '"source_url" TEXT' +
             ');'
         ))
         .then(() => queryInterface.sequelize.query(

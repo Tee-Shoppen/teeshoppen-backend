@@ -490,7 +490,6 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         },
         countryHarmonizedSystemCodes: {
           type: DataTypes.JSON, // Assuming data can be stored as JSON
-          allowNull: false,
         },
         createdAt: {
           type: DataTypes.DATE,
@@ -510,7 +509,7 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         },
         sku: {
           type: DataTypes.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         tracked: {
           type: DataTypes.BOOLEAN,

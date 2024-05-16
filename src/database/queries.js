@@ -196,12 +196,19 @@ const insertVariant = async (v) => {
   }
 };
 
-// NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert an inventory item
 const insertInventoryitems = async (i) => {
   try {
-    await inventoryItemsTable.insert(i);
-    console.log('inventoryItemsTable creation successful.');
+   InventoryItem.create(i,
+      {
+        ignoreDuplicates : true
+      }
+    ).then(() => {
+      console.log('Inventory items creation successful.');
+    }).catch(err => {
+      console.log('insertInventoryitems || error', err);
+    })
+    
   } catch (error) {
     console.error('Error inserting inventory item:', error);
     throw error; // Re-throw the error for handling by the caller
@@ -237,6 +244,7 @@ const insertManyProducts = async (p) => {
           model: Variant,
           as: 'variants',
           required: true,
+          ignoreDuplicates: true,
         },
       }
     ).then((newProduct) => {
@@ -785,11 +793,11 @@ async function updateInventoryItem(i_id, rowToUpdate) {
 
       if (!existingData) {
         console.error('No existing inventory found.');
+        await insertInventoryitems(rowToUpdate);
       }
 
       else {
         const rowsToInsert = rowToUpdate;
-
         // Insert the modified data back into the table
         await existingData.update({...rowsToInsert});
         console.log('Inventory row updated successfully.');
@@ -871,7 +879,7 @@ const insertOrderLineItem = async (ol) => {
 
 // Function to insert multiple orders
 const insertManyOrders = async (p) => {
-  // console.log(p);
+  console.log(p.length, 'ORDERS COUNT');
   try {
     Order.bulkCreate(p,
       {
