@@ -66,7 +66,7 @@ const generateProductDescriptionSingle = async (id) => {
       let new_description = await new_html;
       
      let newProduct = {
-      id: product.id,
+      product_id: product.id,
       webshop:product.webshop,
       title: product.title,
       body_html: product.body_html,

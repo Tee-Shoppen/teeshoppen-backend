@@ -64,6 +64,9 @@ const insertProductText = async (p) => {
 // Function to insert a productDesc
 const insertDescription = async (p) => {
   try {
+    //check if product already exists
+    let exists = await ProductText.findOne({where: {product_id : p.product_id}})
+    if (exists) return;
     await ProductText.create(p)
     .then((textDesc) => {
       console.log('Product has been inserted to productText table.');
@@ -420,7 +423,6 @@ const retrieveManyProducts = async (req, res, next) => {
 // Function to retrieve many products with < 500
 const retrieveProductsforAI = async (req, res, next) => {
 
-  console.log('called');
   let p;
   // 
   var attributes = ['id', 'title', 'body_html', 'webshop', 'vendor', 'tags'];
@@ -434,7 +436,6 @@ const retrieveProductsforAI = async (req, res, next) => {
     ...(attributes ? { attributes } : undefined),
     paranoid: false,
     raw: true,
-    limit: 2,
   })
     .then(async ({ rows, count}) => {
       // if (rows === null) {
@@ -471,19 +472,32 @@ const retrieveProductsforAI = async (req, res, next) => {
 
 // Function to retrieve many products with < 500 for single product
 const retrieveProductsforAISingle = async (id) => {
-  const query = `
-  SELECT id, title, body_html, webshop, vendor, tags
-  FROM (
-        SELECT *, ROW_NUMBER()
-                  OVER (PARTITION BY id, title) row_number
-        FROM ${datasetId}.products) 
-  WHERE row_number = 1 and LENGTH(body_html) < 500 and id=${id};`
-try {
-  // Run the SQL query
-  const [rows] = await bigquery.query(query);
-  //    return product
+  let p;
+  // 
+  var attributes = ['id', 'title', 'body_html', 'webshop', 'vendor', 'tags'];
 
-  return rows;
+  try{
+    // Run query
+   // const mainProduct = await Product.findOne({ where: { id: req.params.id }});
+    await Product.findOne({
+    where: { id: id },
+    ...(attributes ? { attributes } : undefined),
+    paranoid: false,
+    raw: true,
+  })
+    .then(async ({ rows}) => {
+      // if (rows === null) {
+      //   console.log('No product found with <500 bodyHTML');
+      //   // next(nsew ValueNotFoundError(`Product ${id}`));
+      //   return;
+      // }
+      //let product = await rows
+      p= await rows;
+      
+      // systemLog('get-product ', `Get product ${product.id}`, 3);
+     // res.data = { orders: rows, totalCount: count };
+    })
+    return p;
 
 } catch (error) {
   console.error('Error running query:', error);
