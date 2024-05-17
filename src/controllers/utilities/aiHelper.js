@@ -127,57 +127,57 @@ const productDescriptionPrompt = {
   }
 
   const seoTitlePrompt = {
-    Danish: `Skriv en unik SEO-sidetitel med en maksimal længde på kun 70 tegn inklusive tegnsætning. Mere end 70 tegn inklusive accepteres ikke, dette er vigtigt.
+    Danish: `Skriv en unik SEO-sidetitel med en maksimal længde på kun 65 tegn inklusive tegnsætning. Sørg for, at output ikke overstiger denne grænse, dette er vigtigt.
     Du har følgende oplysninger, du skal inkludere i din tekst:
     Sprog = dansk
     Produkttitel = <title>
     Mærke = <brand>`,
-    Czech: `Napište jedinečný název SEO stránky o maximální délce pouhých 70 znaků včetně interpunkce. Více než 70 znaků včetně není akceptováno, to je důležité.
+    Czech: `Napište jedinečný název SEO stránky o maximální délce pouhých 65 znaků včetně interpunkce. Ujistěte se, že výstup nepřekračuje tento limit, to je důležité.
     Máte následující informace, které musíte do svého textu zahrnout:
     Jazyk = čeština
     Název produktu = <title>
     Značka = <brand>`,
-    German: `Schreiben Sie einen einzigartigen SEO-Seitentitel mit einer maximalen Länge von nur 70 Zeichen inklusive Satzzeichen. Mehr als 70 Zeichen werden nicht akzeptiert, das ist wichtig.
+    German: `Schreiben Sie einen einzigartigen SEO-Seitentitel mit einer maximalen Länge von nur 65 Zeichen inklusive Satzzeichen. Stellen Sie sicher, dass die Ausgabe diesen Grenzwert nicht überschreitet. Dies ist wichtig.
     Sie haben die folgenden Informationen, die Sie in Ihren Text aufnehmen müssen:
     Sprache = Deutsch
     Produkttitel = <title>
     Marke = <brand>`,
-    Finnish: `Kirjoita ainutlaatuinen SEO-sivun otsikko, jonka enimmäispituus on vain 70 merkkiä välimerkit mukaan lukien. Yli 70 merkkiä mukaan lukien ei hyväksytä, tämä on tärkeää.
+    Finnish: `Kirjoita ainutlaatuinen SEO-sivun otsikko, jonka enimmäispituus on vain 65 merkkiä välimerkit mukaan lukien. Varmista, että teho ei ylitä tätä rajaa, tämä on tärkeää.
     Sinulla on seuraavat tiedot, jotka sinun on sisällytettävä tekstiisi:
     Kieli = suomi
     Tuotteen nimi = <title>
     Merkki = <brand>`,
-    Dutch: `Schrijf een unieke SEO-paginatitel met een maximale lengte van slechts 70 tekens, inclusief leestekens. Meer dan 70 tekens worden niet geaccepteerd, dit is belangrijk.
+    Dutch: `Schrijf een unieke SEO-paginatitel met een maximale lengte van slechts 65 tekens, inclusief leestekens. Zorg ervoor dat de uitvoer deze limiet niet overschrijdt; dit is belangrijk.
     U heeft de volgende gegevens nodig die u in uw tekst moet opnemen:
     Taal = Nederlands
     Producttitel = <title>
     Merk = <brand>`,
-    Norwegian: `Skriv en unik SEO-sidetittel med en maksimal lengde på bare 70 tegn inkludert tegnsetting. Mer enn 70 tegn inkludert aksepteres ikke, dette er viktig.
+    Norwegian: `Skriv en unik SEO-sidetittel med en maksimal lengde på bare 65 tegn inkludert tegnsetting. Pass på at utgangen ikke overskrider denne grensen, dette er viktig.
     Du har følgende informasjon du må inkludere i teksten din:
     Språk = norsk
     Produkttittel = <title>
     Merke = <brand>`,
-    Polish: `Napisz unikalny tytuł strony SEO o maksymalnej długości tylko 70 znaków, łącznie ze znakami interpunkcyjnymi. Więcej niż 70 znaków łącznie nie jest akceptowanych, jest to ważne.
+    Polish: `Napisz unikalny tytuł strony SEO o maksymalnej długości tylko 65 znaków, łącznie ze znakami interpunkcyjnymi.Upewnij się, że moc wyjściowa nie przekracza tego limitu, jest to ważne.
     Masz następujące informacje, które musisz uwzględnić w swoim tekście:
     Język = polski
     Tytuł produktu = <title>
     Marka = <brand>`,
-    Swedish: `Skriv en unik SEO-sidatitel med en maximal längd på endast 70 tecken inklusive skiljetecken. Mer än 70 tecken inklusive accepteras inte, detta är viktigt.
+    Swedish: `Skriv en unik SEO-sidatitel med en maximal längd på endast 65 tecken inklusive skiljetecken. Se till att uteffekten inte överskrider denna gräns, detta är viktigt.
     Du har följande information som du behöver inkludera i din text:
     Språk = svenska
     Produkttitel = <title>
     Märke = <brand>`,
-    'England English': `Write a unique SEO page title with a maximum length of only 70 characters including punctuations. More than 70 characters including are not accepted, this is important.
+    'England English': `Write a unique SEO page title with a maximum length of only 65 characters including punctuations. Ensure the output does not exceed this limit, this is important.
     You have the following information you need to include in your text:
     Language = England english
     Product title = <title>
     Brand = <brand>`,
-    'American English': `Write a unique SEO page title with a maximum length of only 70 characters including punctuations. More than 70 characters including are not accepted, this is important.
+    'American English': `Write a unique SEO page title with a maximum length of only 65 characters including punctuations. Ensure the output does not exceed this limit, this is important.
     You have the following information you need to include in your text:
     Language = American english
     Product title = <title>
     Brand = <brand>`,
-    English: `Write a unique SEO page title with a maximum length of only 70 characters including punctuations. More than 70 characters including are not accepted, this is important.
+    English: `Write a unique SEO page title with a maximum length of only 65 characters including punctuations. Ensure the output does not exceed this limit, this is important.
     You have the following information you need to include in your text:
     Language = English
     Product title = <title>
