@@ -58,67 +58,67 @@ const productDescriptionPrompt = {
   }
 
   const seoDescriptionPrompt = {
-    Danish: `Skriv en unik SEO-metabeskrivelse med en maksimal længde på 320 tegn. Mere end 320 tegn accepteres ikke, og sæt venligst ikke citater på beskrivelsen. Det skal vise troværdighed og give folk lyst til at købe produktet, når de ser overskriften. Vi har altid ✓ Hurtig levering ✓ 101 dages ombytning ✓ Prisgaranti ✓ Sikker shopping.
+    Danish: `Generer venligst en SEO-beskrivelse med maksimalt 320 tegn. Sørg for, at output ikke overstiger denne grænse. Gør det overbevisende at øge produktets troværdighed og tilskynde til køb. Inkluder: ✓ Hurtig levering ✓ 101 dages ombytning ✓ Prisgaranti ✓ Sikker shopping..
     Du har følgende oplysninger, du skal inkludere i din tekst:
     Sprog = dansk
     Produkttitel = <title>
     Mærke = <brand>
     Køn = <gender>`,
-    Czech: `Napište jedinečný SEO Meta popis s maximální délkou pouze 320 znaků. Více než 320 znaků nebude akceptováno a prosím, neuvádějte do popisu citace. Musí ukázat důvěryhodnost a přimět lidi, aby si chtěli produkt koupit, když vidí titulek. Vždy máme ✓ Rychlé dodání ✓ 101denní výměna ✓ Garance ceny ✓ Bezpečné nakupování.
+    Czech: `Vygenerujte prosím SEO popis s maximálně 320 znaky. Ujistěte se, že výstup nepřekračuje tento limit. Udělejte to přesvědčivé, abyste zvýšili důvěryhodnost produktu a podpořili nákupy. Zahrnuje: ✓ Rychlé doručení ✓ 101denní výměna ✓ Garance ceny ✓ Bezpečné nakupování.
     Máte následující informace, které musíte do svého textu zahrnout:
     Jazyk = čeština
     Název produktu = <title>
     Značka = <brand>
     Pohlaví = <gender>`,
-    German: `Schreiben Sie eine eindeutige SEO-Meta-Beschreibung mit einer maximalen Länge von 320 Zeichen. Mehr als 320 Zeichen werden nicht akzeptiert und bitte verwenden Sie keine Anführungszeichen in der Beschreibung. Es muss Glaubwürdigkeit zeigen und Menschen dazu bringen, das Produkt zu kaufen, wenn sie die Schlagzeile sehen. Wir bieten immer ✓ schnelle Lieferung ✓ 101-Tage-Umtausch ✓ Preisgarantie ✓ Sicheres Einkaufen.
+    German: `Bitte generieren Sie eine SEO-Beschreibung mit maximal 320 Zeichen. Stellen Sie sicher, dass die Ausgabe diesen Grenzwert nicht überschreitet. Machen Sie es überzeugend, um die Glaubwürdigkeit des Produkts zu steigern und zum Kauf anzuregen. Dazu gehören: ✓ Schnelle Lieferung ✓ 101-tägiger Umtausch ✓ Preisgarantie ✓ Sicheres Einkaufen.
     Sie haben die folgenden Informationen, die Sie in Ihren Text aufnehmen müssen:
     Sprache = Deutsch
     Produkttitel = <title>
     Marke = <brand>
     Geschlecht = <gender>`,
-    Finnish: `Kirjoita ainutlaatuinen SEO Meta -kuvaus, jonka enimmäispituus on vain 320 merkkiä. Yli 320 merkkiä ei hyväksytä, äläkä laita kuvaukseen lainauksia. Sen on osoitettava uskottavuutta ja saatava ihmiset haluamaan ostaa tuotetta, kun he näkevät otsikon. Meillä on aina ✓ Nopea toimitus ✓ 101 päivän vaihto ✓ Hintatakuu ✓ Turvallinen ostos.
+    Finnish: `Luo SEO-kuvaus, jossa on enintään 320 merkkiä. Varmista, että lähtö ei ylitä tätä rajaa. Tee siitä houkutteleva lisätäksesi tuotteiden uskottavuutta ja kannustaaksesi ostamaan. Sisältää: ✓ Nopea toimitus ✓ 101 päivän vaihto ✓ Hintatakuu ✓ Turvalliset ostokset.
     Sinulla on seuraavat tiedot, jotka sinun on sisällytettävä tekstiisi:
     Kieli = suomi
     Tuotteen nimi = <title>
     Merkki = <brand>
     Sukupuoli = <gender>`,
-    Dutch: `Schrijf een unieke SEO-metabeschrijving met een maximale lengte van slechts 320 tekens. Meer dan 320 tekens worden niet geaccepteerd en plaats geen citaten in de beschrijving. Het moet geloofwaardigheid uitstralen en ervoor zorgen dat mensen het product willen kopen als ze de kop zien. Wij hebben altijd ✓ Snelle levering ✓ 101 dagen bedenktijd ✓ Prijsgarantie ✓ Veilig winkelen.
+    Dutch: `Genereer een SEO-beschrijving van maximaal 320 tekens. Zorg ervoor dat de uitvoer deze limiet niet overschrijdt. Maak het aantrekkelijk om de geloofwaardigheid van het product te vergroten en aankopen aan te moedigen. Inclusief: ✓ Snelle levering ✓ 101 dagen ruilen ✓ Prijsgarantie ✓ Veilig winkelen.
     U heeft de volgende gegevens nodig die u in uw tekst moet opnemen:
     Taal = Nederlands
     Producttitel = <title>
     Merk = <brand>
     Geslacht = <gender>`,
-    Norwegian: `Skriv en unik SEO-metabeskrivelse med en maksimal lengde på bare 320 tegn. Mer enn 320 tegn vil ikke bli akseptert, og vennligst ikke skriv sitater på beskrivelsen. Det må vise troverdighet og gi folk lyst til å kjøpe produktet når de ser overskriften. Vi har alltid ✓ Rask levering ✓ 101 dagers bytte ✓ Prisgaranti ✓ Trygg handel.
+    Norwegian: `Generer en SEO-beskrivelse med maksimalt 320 tegn. Sørg for at utgangen ikke overskrider denne grensen. Gjør det overbevisende å øke produktets troverdighet og oppmuntre til kjøp. Inkluder: ✓ Rask levering ✓ 101-dagers bytte ✓ Prisgaranti ✓ Sikker handel.
     Du har følgende informasjon du må inkludere i teksten din:
     Språk = norsk
     Produkttittel = <title>
     Merke = <brand>
     Kjønn = <gender>`,
-    Polish: `Napisz unikalny opis SEO Meta o maksymalnej długości 320 znaków. Więcej niż 320 znaków nie będzie akceptowanych i proszę nie umieszczać cudzysłowów w opisie. Musi wykazywać wiarygodność i sprawiać, że ludzie, gdy zobaczą nagłówek, będą chcieli kupić produkt. Zawsze mamy ✓ szybką dostawę ✓ 101-dniową wymianę ✓ gwarancję ceny ✓ bezpieczne zakupy. 
+    Polish: `Proszę wygenerować opis SEO zawierający maksymalnie 320 znaków. Upewnij się, że moc wyjściowa nie przekracza tego limitu. Spraw, aby był atrakcyjny, aby zwiększyć wiarygodność produktu i zachęcić do zakupów. Zawiera: ✓ Szybka dostawa ✓ 101-dniowa wymiana ✓ Gwarancja ceny ✓ Bezpieczne zakupy.
     Masz następujące informacje, które musisz uwzględnić w swoim tekście:
     Język = polski
     Tytuł produktu = <title>
     Marka = <brand>
     Płeć = <gender>`,
-    Swedish: `Skriv en unik SEO-metabeskrivning med en maximal längd på endast 320 tecken. Mer än 320 tecken accepteras inte och vänligen skriv inte citat på beskrivningen. Det måste visa trovärdighet och få folk att vilja köpa produkten när de ser rubriken. Vi har alltid ✓ Snabb leverans ✓ 101 dagars byte ✓ Prisgaranti ✓ Säker shopping.
+    Swedish: `Vänligen skapa en SEO-beskrivning med högst 320 tecken. Se till att uteffekten inte överskrider denna gräns. Gör det övertygande att öka produktens trovärdighet och uppmuntra köp. Inkludera: ✓ Snabb leverans ✓ 101 dagars byte ✓ Prisgaranti ✓ Säker shopping.
     Du har följande information som du behöver inkludera i din text:
     Språk = svenska
     Produkttitel = <title>
     Märke = <brand>
     Kön = <gender>`,
-    'England English': `Write a unique SEO Meta description with a maximum length of 320 characters only.More than 320 characters will not be accepted and please don't put quotations on the description. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
+    'England English': `Please generate an SEO description with a maximum of 320 characters. Ensure the output does not exceed this limit. Make it compelling to boost product credibility and encourage purchases. Include: ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
     You have the following information you need to include in your text:
     Language = England english
     Product title = <title>
     Brand = <brand>
     Gender = <gender>`,
-    'American English': `Write a unique SEO Meta description with a maximum length of 320 characters only.More than 320 characters will not be accepted and please don't put quotations on the description. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
+    'American English': `Please generate an SEO description with a maximum of 320 characters. Ensure the output does not exceed this limit. Make it compelling to boost product credibility and encourage purchases. Include: ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
     You have the following information you need to include in your text:
     Language = American english
     Product title = <title>
     Brand = <brand>
     Gender = <gender>`,
-    English: `Write a unique SEO Meta description with a maximum length of 320 characters only.More than 320 characters will not be accepted and please don't put quotations on the description. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
+    English: `Please generate an SEO description with a maximum of 320 characters. Ensure the output does not exceed this limit. Make it compelling to boost product credibility and encourage purchases. Include: ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
     You have the following information you need to include in your text:
     Language = English
     Product title = <title>
