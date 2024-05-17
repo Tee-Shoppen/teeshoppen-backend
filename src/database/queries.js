@@ -75,8 +75,8 @@ const insertDescription = async (p) => {
       console.log('insertDescription || ,', err);
     })
   } catch (error) {
-    console.error('insertDescription || Error inserting product to productText:', error.errors[0]);
-    throw error; // Re-throw the error for handling by the caller
+    console.error('insertDescription || Error inserting product to productText:', error);
+   // throw error; // Re-throw the error for handling by the caller
   }
 };
 
@@ -489,7 +489,7 @@ const retrieveProductsforAISingle = async (id) => {
     paranoid: false,
     raw: true,
   })
-    .then(async ({ rows}) => {
+    .then(async (rows) => {
       // if (rows === null) {
       //   console.log('No product found with <500 bodyHTML');
       //   // next(nsew ValueNotFoundError(`Product ${id}`));
@@ -497,6 +497,7 @@ const retrieveProductsforAISingle = async (id) => {
       // }
       //let product = await rows
       p= await rows;
+      console.log(p);
       
       // systemLog('get-product ', `Get product ${product.id}`, 3);
      // res.data = { orders: rows, totalCount: count };

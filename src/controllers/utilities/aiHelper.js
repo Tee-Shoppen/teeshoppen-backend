@@ -1,135 +1,124 @@
 // Helpers
 const productDescriptionPrompt = {
-    Danish: `Skriv en produktbeskrivelse til min <title> som er et produkt til <køn>, jeg har brug for din hjælp til nøje at identificere og fremhæve produktets nøglefunktioner, unikke salgsargumenter og fordele. Beskrivelsen skal være konstrueret på en måde, der ikke kun giver detaljerede oplysninger til potentielle kunder, men også effektivt overtaler dem til at træffe købsbeslutninger. Kan du hjælpe mig med at lave en beskrivelse, der inkluderer en fængslende overskrift, dybdegående produktspecifikationer, en liste over fordele og en overbevisende opfordring til handling skræddersyet til produktets målgruppe? Nævn ikke noget om økologisk. Du har følgende oplysninger, du skal inkludere i din tekst:
-    Sprog = dansk
-    Produkttitel = <title>
-    Mærke = <brand>
-    Køn = <gender>`,
-    Czech: `Napište popis produktu pro můj <title>, což je produkt pro <gender>. Potřebuji vaši pomoc, abych pečlivě identifikoval a zdůraznil klíčové vlastnosti produktu, jedinečné prodejní přednosti a výhody. Popis musí být konstruován tak, aby potenciálním zákazníkům nejen poskytoval podrobné informace, ale také je účinně přesvědčoval k rozhodování o nákupu. Můžete mi pomoci vytvořit popis, který bude obsahovat podmanivý nadpis, podrobné specifikace produktu, seznam výhod a přesvědčivou výzvu k akci přizpůsobenou cílovému publiku produktu? Nezmiňujte nic o bio. Máte následující informace, které musíte do svého textu zahrnout:
-    Jazyk = čeština
-    Název produktu = <title>
-    Značka = <brand>
-    Pohlaví = <gender>`,
-    German: `Verfassen Sie eine Produktbeschreibung für mein <Titel>, ein Produkt für <Geschlecht>. Ich benötige Ihre Hilfe, um die Hauptmerkmale, Alleinstellungsmerkmale und Vorteile des Produkts sorgfältig zu identifizieren und hervorzuheben. Die Beschreibung muss so aufgebaut sein, dass sie potenzielle Kunden nicht nur detailliert informiert, sondern sie auch wirkungsvoll zu einer Kaufentscheidung bewegt. Können Sie mir dabei helfen, eine Beschreibung zu erstellen, die eine fesselnde Überschrift, ausführliche Produktspezifikationen, eine Liste der Vorteile und einen überzeugenden Aufruf zum Handeln enthält, der auf die Zielgruppe des Produkts zugeschnitten ist? Erwähnen Sie nichts über Bio. Sie haben die folgenden Informationen, die Sie in Ihren Text aufnehmen müssen:
-    Sprache = Deutsch
-    Produkttitel = <title>
-    Marke = <brand>
-    Geschlecht = <gender>`,
-    Finnish: `Kirjoita tuotekuvaus <title>-tuotteelleni, joka on tuote <gender>. Tarvitsen apuasi tunnistaakseni ja korostaakseni huolellisesti tuotteen tärkeimmät ominaisuudet, ainutlaatuiset myyntivaltit ja edut. Kuvaus on laadittava siten, että se ei ainoastaan ​​tarjoa yksityiskohtaista tietoa potentiaalisille asiakkaille, vaan myös saa heidät tehokkaasti tekemään ostopäätöksiä. Voitko auttaa minua luomaan kuvauksen, joka sisältää kiehtovan otsikon, perusteelliset tuotetiedot, luettelon eduista ja houkuttelevan toimintakehotuksen, joka on räätälöity tuotteen kohdeyleisölle? Älä mainitse luomutuotteista mitään. Sinulla on seuraavat tiedot, jotka sinun on sisällytettävä tekstiisi:
-    Kieli = suomi
-    Tuotteen nimi = <title>
-    Merkki = <brand>
-    Sukupuoli = <gender>`,
-    Dutch: `Kirjoita tuotekuvaus <title>-tuotteelleni, joka on tuote <gender>. Tarvitsen apuasi tunnistaakseni ja korostaakseni huolellisesti tuotteen tärkeimmät ominaisuudet, ainutlaatuiset myyntivaltit ja edut. Kuvaus on laadittava siten, että se ei ainoastaan ​​tarjoa yksityiskohtaista tietoa potentiaalisille asiakkaille, vaan myös saa heidät tehokkaasti tekemään ostopäätöksiä. Voitko auttaa minua luomaan kuvauksen, joka sisältää kiehtovan otsikon, perusteelliset tuotetiedot, luettelon eduista ja houkuttelevan toimintakehotuksen, joka on räätälöity tuotteen kohdeyleisölle? Älä mainitse luomutuotteista mitään. U heeft de volgende gegevens nodig die u in uw tekst moet opnemen:
-    Taal = Nederlands
-    Producttitel = <title>
-    Merk = <brand>
-    Geslacht = <gender>`,
-    Norwegian: `Skriv en produktbeskrivelse for min <tittel> som er et produkt for <kjønn>, jeg trenger din hjelp til å identifisere og fremheve produktets nøkkelegenskaper, unike salgsargumenter og fordeler nøye. Beskrivelsen må konstrueres på en måte som ikke bare gir detaljert informasjon til potensielle kunder, men som også effektivt overtaler dem til å ta kjøpsbeslutninger. Kan du hjelpe meg med å lage en beskrivelse som inkluderer en fengslende overskrift, dyptgående produktspesifikasjoner, en liste over fordeler og en overbevisende oppfordring til handling skreddersydd for produktets målgruppe? Ikke nevne noe om økologisk. Du har følgende informasjon du må inkludere i teksten din:
-    Språk = norsk
-    Produkttittel = <title>
-    Merke = <brand>
-    Kjønn = <gender>`,
-    Polish: `Napisz opis produktu dla mojego <title>, który jest produktem dla <gender>. Potrzebuję Twojej pomocy, aby dokładnie zidentyfikować i podkreślić kluczowe cechy produktu, unikalne zalety i zalety produktu. Opis musi być skonstruowany w taki sposób, aby nie tylko dostarczał potencjalnym klientom szczegółowych informacji, ale także skutecznie przekonywał ich do podjęcia decyzji zakupowej. Czy możesz mi pomóc w przygotowaniu opisu zawierającego urzekający nagłówek, szczegółowe specyfikacje produktu, listę korzyści i przekonujące wezwanie do działania dostosowane do docelowej grupy odbiorców produktu? Nie wspominaj nic o produktach organicznych. Masz następujące informacje, które musisz uwzględnić w swoim tekście:
-    Język = polski
-    Tytuł produktu = <title>
-    Marka = <brand>
-    Płeć = <gender>`,
-    Swedish: `Skriv en produktbeskrivning för min <titel> som är en produkt för <kön>, jag behöver din hjälp för att noggrant identifiera och lyfta fram produktens nyckelegenskaper, unika försäljningsargument och fördelar. Beskrivningen måste konstrueras på ett sätt som inte bara ger detaljerad information till potentiella kunder, utan också effektivt övertygar dem att fatta köpbeslut. Kan du hjälpa mig att skapa en beskrivning som inkluderar en fängslande rubrik, djupgående produktspecifikationer, en lista över fördelar och en övertygande uppmaning anpassad till produktens målgrupp? Säg inget om ekologiskt. Du har följande information som du behöver inkludera i din text:
-    Språk = svenska
-    Produkttitel = <title>
-    Märke = <brand>
-    Kön = <gender>`,
-    'England English': `Write a product description for my <title> which is a product for <gender>, I need your help to carefully identify and highlight the product's key features, unique selling points and benefits. The description must be constructed in a way that not only provides detailed information to potential customers, but also effectively persuades them to make purchasing decisions. Can you help me craft a description that includes a captivating headline, in-depth product specifications, a list of benefits and a compelling call to action tailored to the product's target audience? Don't mention anything about organic. You have the following information you need to include in your text:
-    Language = England english
-    Product title = <title>
-    Brand = <brand>
-    Gender = <gender>`,
-    'American English': `Write a product description for my <title> which is a product for <gender>, I need your help to carefully identify and highlight the product's key features, unique selling points and benefits. The description must be constructed in a way that not only provides detailed information to potential customers, but also effectively persuades them to make purchasing decisions. Can you help me craft a description that includes a captivating headline, in-depth product specifications, a list of benefits and a compelling call to action tailored to the product's target audience? Don't mention anything about organic. You have the following information you need to include in your text:
-    Language = American english
-    Product title = <title>
-    Brand = <brand>
-    Gender = <gender>`,
-    English: `Write a product description for my <title> which is a product for <gender>, I need your help to carefully identify and highlight the product's key features, unique selling points and benefits. The description must be constructed in a way that not only provides detailed information to potential customers, but also effectively persuades them to make purchasing decisions. Can you help me craft a description that includes a captivating headline, in-depth product specifications, a list of benefits and a compelling call to action tailored to the product's target audience? Don't mention anything about organic.
-    You have the following information you need to include in your text:
-    Language = English
-    Product title = <title>
-    Brand = <brand>
-    Gender = <gender>`,
+  Danish: `Du er tekstforfatter hos TeeShoppen og skal skrive en tekst på omkring 400 til 500 ord om et produkt. Du har følgende oplysninger, du skal inkludere i din tekst:
+  Sprog = dansk
+  Produkttitel = <title>
+  Mærke = <brand>
+  Køn = <gender>`,
+  Czech: `Jste copywriter v TeeShoppen a potřebujete o produktu napsat text o délce přibližně 400 až 500 slov. Máte následující informace, které musíte do svého textu zahrnout:
+  Jazyk = čeština
+  Název produktu = <title>
+  Značka = <brand>
+  Pohlaví = <gender>`,
+  German: `Sie sind Texter bei TeeShoppen und müssen einen Text von etwa 400 bis 500 Wörtern zu einem Produkt verfassen. Sie haben die folgenden Informationen, die Sie in Ihren Text aufnehmen müssen:
+  Sprache = Deutsch
+  Produkttitel = <title>
+  Marke = <brand>
+  Geschlecht = <gender>`,
+  Finnish: `Olet tekstinkirjoittaja TeeShoppen ja sinun on kirjoitettava tuotteesta noin 400–500 sanaa pitkä teksti. Sinulla on seuraavat tiedot, jotka sinun on sisällytettävä tekstiisi:
+  Kieli = suomi
+  Tuotteen nimi = <title>
+  Merkki = <brand>
+  Sukupuoli = <gender>`,
+  Dutch: `Je bent copywriter bij Teeshoppen en moet een tekst van ongeveer 400 tot 500 woorden schrijven over een product. U heeft de volgende gegevens nodig die u in uw tekst moet opnemen:
+  Taal = Nederlands
+  Producttitel = <title>
+  Merk = <brand>
+  Geslacht = <gender>`,
+  Norwegian: `Du er tekstforfatter hos TeeShoppen og trenger å skrive en tekst på rundt 400 til 500 ord om et produkt. Du har følgende informasjon du må inkludere i teksten din:
+  Språk = norsk
+  Produkttittel = <title>
+  Merke = <brand>
+  Kjønn = <gender>`,
+  Polish: `Jesteś copywriterem w TeeShoppen i musisz napisać tekst o produkcie zawierający od 400 do 500 słów. Masz następujące informacje, które musisz uwzględnić w swoim tekście:
+  Język = polski
+  Tytuł produktu = <title>
+  Marka = <brand>
+  Płeć = <gender>`,
+  Swedish: `Du är copywriter på TeeShoppen och behöver skriva en text på cirka 400 till 500 ord om en produkt. Du har följande information som du behöver inkludera i din text:
+  Språk = svenska
+  Produkttitel = <title>
+  Märke = <brand>
+  Kön = <gender>`,
+  'England English': `You are a copywriter at TeeShoppen and need to write a text of around 400 to 500 words about a product. You have the following information you need to include in your text:
+  Language = England english
+  Product title = <title>
+  Brand = <brand>
+  Gender = <gender>`,
+  'American English': `You are a copywriter at TeeShoppen and need to write a text of around 400 to 500 words about a product. You have the following information you need to include in your text:
+  Language = American english
+  Product title = <title>
+  Brand = <brand>
+  Gender = <gender>`,
+  English: `You are a copywriter at TeeShoppen and need to write a text of around 400 to 500 words about a product. You have the following information you need to include in your text:
+  Language = English
+  Product title = <title>
+  Brand = <brand>
+  Gender = <gender>`,
   }
 
   const seoDescriptionPrompt = {
-    Danish: `Skriv en unik SEO Metabeskrivelse med en maksimal længde på 320 tegn. Det skal vise troværdighed og give folk lyst til at købe produktet, når de ser overskriften. Vi har altid ✓ Hurtig levering ✓ 101 dages ombytning ✓ Prisgaranti ✓ Sikker shopping. 
-    Tilføj denne linje til sidst: Hos TeeShoppen er vi specialiseret i at producere basistøj til den modne person. Vi har over 750.000 kunder gennem vores webshop årligt og sender pakker alle ugens dage.
+    Danish: `Skriv en unik SEO-metabeskrivelse med en maksimal længde på 320 tegn. Mere end 320 tegn accepteres ikke, og sæt venligst ikke citater på beskrivelsen. Det skal vise troværdighed og give folk lyst til at købe produktet, når de ser overskriften. Vi har altid ✓ Hurtig levering ✓ 101 dages ombytning ✓ Prisgaranti ✓ Sikker shopping.
+    Du har følgende oplysninger, du skal inkludere i din tekst:
     Sprog = dansk
     Produkttitel = <title>
     Mærke = <brand>
     Køn = <gender>`,
-    Czech: `Napište jedinečný SEO Meta popis s maximální délkou 320 znaků. Musí ukazovat důvěryhodnost a přimět lidi, aby si chtěli produkt koupit, když vidí titulek. Vždy máme ✓ Rychlé dodání ✓ 101denní výměna ✓ Garance ceny ✓ Bezpečné nakupování.
-    Přidejte tento řádek na závěr: V TeeShoppen se specializujeme na výrobu základního oblečení pro dospělé. Prostřednictvím našeho internetového obchodu máme ročně přes 750 000 zákazníků a odesíláme balíčky každý den v týdnu.
+    Czech: `Napište jedinečný SEO Meta popis s maximální délkou pouze 320 znaků. Více než 320 znaků nebude akceptováno a prosím, neuvádějte do popisu citace. Musí ukázat důvěryhodnost a přimět lidi, aby si chtěli produkt koupit, když vidí titulek. Vždy máme ✓ Rychlé dodání ✓ 101denní výměna ✓ Garance ceny ✓ Bezpečné nakupování.
     Máte následující informace, které musíte do svého textu zahrnout:
     Jazyk = čeština
     Název produktu = <title>
     Značka = <brand>
     Pohlaví = <gender>`,
-    German: `Schreiben Sie eine einzigartige SEO-Meta-Beschreibung mit einer maximalen Länge von 320 Zeichen. Es muss Glaubwürdigkeit zeigen und Menschen dazu bringen, das Produkt zu kaufen, wenn sie die Schlagzeile sehen. Wir bieten immer ✓ schnelle Lieferung ✓ 101-Tage-Umtausch ✓ Preisgarantie ✓ Sicheres Einkaufen. 
-    Fügen Sie am Ende diese Zeile hinzu: Bei TeeShoppen sind wir auf die Herstellung von Basic-Kleidung für den reifen Menschen spezialisiert. Wir haben jährlich über 750.000 Kunden über unseren Webshop und versenden Pakete jeden Tag der Woche.
+    German: `Schreiben Sie eine eindeutige SEO-Meta-Beschreibung mit einer maximalen Länge von 320 Zeichen. Mehr als 320 Zeichen werden nicht akzeptiert und bitte verwenden Sie keine Anführungszeichen in der Beschreibung. Es muss Glaubwürdigkeit zeigen und Menschen dazu bringen, das Produkt zu kaufen, wenn sie die Schlagzeile sehen. Wir bieten immer ✓ schnelle Lieferung ✓ 101-Tage-Umtausch ✓ Preisgarantie ✓ Sicheres Einkaufen.
     Sie haben die folgenden Informationen, die Sie in Ihren Text aufnehmen müssen:
     Sprache = Deutsch
     Produkttitel = <title>
     Marke = <brand>
     Geschlecht = <gender>`,
-    Finnish: `Kirjoita ainutlaatuinen SEO-sisällönkuvaus, jonka enimmäispituus on 320 merkkiä. Sen on osoitettava uskottavuutta ja saatava ihmiset haluamaan ostaa tuote, kun he näkevät otsikon. Meillä on aina ✓ Nopea toimitus ✓ 101 päivän vaihto ✓ Hintatakuu ✓ Turvallinen ostos. 
-    Lisää tämä rivi loppuun: TeeShoppenilla olemme erikoistuneet valmistamaan perusvaatteita aikuisille ihmisille. Meillä on yli 750 000 asiakasta verkkokauppamme kautta vuosittain ja lähetämme paketteja viikon jokaisena päivänä.
+    Finnish: `Kirjoita ainutlaatuinen SEO Meta -kuvaus, jonka enimmäispituus on vain 320 merkkiä. Yli 320 merkkiä ei hyväksytä, äläkä laita kuvaukseen lainauksia. Sen on osoitettava uskottavuutta ja saatava ihmiset haluamaan ostaa tuotetta, kun he näkevät otsikon. Meillä on aina ✓ Nopea toimitus ✓ 101 päivän vaihto ✓ Hintatakuu ✓ Turvallinen ostos.
     Sinulla on seuraavat tiedot, jotka sinun on sisällytettävä tekstiisi:
     Kieli = suomi
     Tuotteen nimi = <title>
     Merkki = <brand>
     Sukupuoli = <gender>`,
-    Dutch: `Schrijf een unieke SEO-metabeschrijving met een maximale lengte van 320 tekens. Het moet geloofwaardigheid tonen en ervoor zorgen dat mensen het product willen kopen als ze de kop zien. Wij hebben altijd ✓ Snelle levering ✓ 101 dagen ruilen ✓ Prijsgarantie ✓ Veilig winkelen. 
-    Voeg deze lijn uiteindelijk toe: Bij TeeShop zijn we gespecialiseerd in het produceren van basiskleding voor de volwassen persoon. Jaarlijks hebben wij ruim 750.000 klanten via onze webshop en verzenden wij iedere dag van de week pakketten.
+    Dutch: `Schrijf een unieke SEO-metabeschrijving met een maximale lengte van slechts 320 tekens. Meer dan 320 tekens worden niet geaccepteerd en plaats geen citaten in de beschrijving. Het moet geloofwaardigheid uitstralen en ervoor zorgen dat mensen het product willen kopen als ze de kop zien. Wij hebben altijd ✓ Snelle levering ✓ 101 dagen bedenktijd ✓ Prijsgarantie ✓ Veilig winkelen.
     U heeft de volgende gegevens nodig die u in uw tekst moet opnemen:
     Taal = Nederlands
     Producttitel = <title>
     Merk = <brand>
     Geslacht = <gender>`,
-    Norwegian: `Skriv en unik SEO-metabeskrivelse med en maksimal lengde på 320 tegn. Det må vise troverdighet og gi folk lyst til å kjøpe produktet når de ser overskriften. Vi har alltid ✓ Rask levering ✓ 101-dagers bytte ✓ Prisgaranti ✓ Sikker handel. 
-    Legg til denne linjen til slutt : Hos TeeShoppen er vi spesialister på å produsere basisklær for den modne personen. Vi har over 750 000 kunder gjennom nettbutikken vår årlig og sender pakker hver dag i uken.
+    Norwegian: `Skriv en unik SEO-metabeskrivelse med en maksimal lengde på bare 320 tegn. Mer enn 320 tegn vil ikke bli akseptert, og vennligst ikke skriv sitater på beskrivelsen. Det må vise troverdighet og gi folk lyst til å kjøpe produktet når de ser overskriften. Vi har alltid ✓ Rask levering ✓ 101 dagers bytte ✓ Prisgaranti ✓ Trygg handel.
     Du har følgende informasjon du må inkludere i teksten din:
     Språk = norsk
     Produkttittel = <title>
     Merke = <brand>
     Kjønn = <gender>`,
-    Polish: `Napisz unikalny opis SEO Meta o maksymalnej długości 320 znaków. Musi wykazywać wiarygodność i sprawiać, że ludzie po zobaczeniu nagłówka będą chcieli kupić produkt. Zawsze mamy ✓ Szybka dostawę ✓ 101-dniowa wymiana ✓ Gwarancja ceny ✓ Bezpieczne zakupy. 
-    Dodaj na końcu tę linijkę: W TeeShoppen specjalizujemy się w produkcji podstawowej odzieży dla dojrzałych osób. Rocznie obsługujemy ponad 750 000 klientów za pośrednictwem naszego sklepu internetowego i wysyłamy paczki każdego dnia w tygodniu.
+    Polish: `Napisz unikalny opis SEO Meta o maksymalnej długości 320 znaków. Więcej niż 320 znaków nie będzie akceptowanych i proszę nie umieszczać cudzysłowów w opisie. Musi wykazywać wiarygodność i sprawiać, że ludzie, gdy zobaczą nagłówek, będą chcieli kupić produkt. Zawsze mamy ✓ szybką dostawę ✓ 101-dniową wymianę ✓ gwarancję ceny ✓ bezpieczne zakupy. 
     Masz następujące informacje, które musisz uwzględnić w swoim tekście:
     Język = polski
     Tytuł produktu = <title>
     Marka = <brand>
     Płeć = <gender>`,
-    Swedish: `Skriv en unik SEO-metabeskrivning med en maximal längd på 320 tecken. Det måste visa trovärdighet och få folk att vilja köpa produkten när de ser rubriken. Vi har alltid ✓ Snabb leverans ✓ 101 dagars byte ✓ Prisgaranti ✓ Säker shopping. 
-    Lägg till denna rad till slut: På TeeShoppen är vi specialiserade på att producera baskläder för den mogna personen. Vi har över 750 000 kunder genom vår webshop årligen och skickar paket alla dagar i veckan.
+    Swedish: `Skriv en unik SEO-metabeskrivning med en maximal längd på endast 320 tecken. Mer än 320 tecken accepteras inte och vänligen skriv inte citat på beskrivningen. Det måste visa trovärdighet och få folk att vilja köpa produkten när de ser rubriken. Vi har alltid ✓ Snabb leverans ✓ 101 dagars byte ✓ Prisgaranti ✓ Säker shopping.
     Du har följande information som du behöver inkludera i din text:
     Språk = svenska
     Produkttitel = <title>
     Märke = <brand>
     Kön = <gender>`,
-    'England English': `Write a unique SEO Meta description with a maximum length of 320 characters. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping. 
-    Add this line in the end : At TeeShoppen, we specialize in producing basic clothing for the mature person. We have over 750,000 customers through our webshop annually and ship packages every day of the week.
+    'England English': `Write a unique SEO Meta description with a maximum length of 320 characters only.More than 320 characters will not be accepted and please don't put quotations on the description. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
     You have the following information you need to include in your text:
     Language = England english
     Product title = <title>
     Brand = <brand>
     Gender = <gender>`,
-    'American English': `Write a unique SEO Meta description with a maximum length of 320 characters. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping. 
-    Add this line in the end : At TeeShoppen, we specialize in producing basic clothing for the mature person. We have over 750,000 customers through our webshop annually and ship packages every day of the week.
+    'American English': `Write a unique SEO Meta description with a maximum length of 320 characters only.More than 320 characters will not be accepted and please don't put quotations on the description. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
     You have the following information you need to include in your text:
     Language = American english
     Product title = <title>
     Brand = <brand>
     Gender = <gender>`,
-    English: `Write a unique SEO Meta description with a maximum length of 320 characters. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
-    Add this line in the end : At TeeShoppen, we specialize in producing basic clothing for the mature person. We have over 750,000 customers through our webshop annually and ship packages every day of the week.
+    English: `Write a unique SEO Meta description with a maximum length of 320 characters only.More than 320 characters will not be accepted and please don't put quotations on the description. It must  show credibility and make people want to buy the product when they see the headline.We always have ✓ Fast delivery ✓ 101-day exchange ✓ Price guarantee ✓ Secure shopping.
     You have the following information you need to include in your text:
     Language = English
     Product title = <title>
@@ -138,48 +127,57 @@ const productDescriptionPrompt = {
   }
 
   const seoTitlePrompt = {
-    Danish: `Skriv en unik SEO-sidetitel med en maksimal længde på 70 tegn. Det skal vise troværdighed og give folk lyst til at købe produktet, når de ser titlen. Det skal skrives, så jeg kan kopiere det direkte til Shopify-backend. Du har følgende oplysninger, du skal inkludere i din tekst:
+    Danish: `Skriv en unik SEO-sidetitel med en maksimal længde på kun 70 tegn. Mere end 70 tegn accepteres ikke, dette er vigtigt.
+    Du har følgende oplysninger, du skal inkludere i din tekst:
     Sprog = dansk
     Produkttitel = <title>
     Mærke = <brand>`,
-    Czech: `Napište jedinečný název SEO stránky o maximální délce 70 znaků. Musí ukázat důvěryhodnost a přimět lidi, aby si koupili produkt, když vidí název. Musí být zapsán, abych jej mohl zkopírovat přímo do backendu Shopify. Máte následující informace, které musíte do svého textu zahrnout:
+    Czech: `Napište jedinečný název SEO stránky s maximální délkou pouze 70 znaků. Více než 70 znaků nebude akceptováno, to je důležité.
+    Máte následující informace, které musíte do svého textu zahrnout:
     Jazyk = čeština
     Název produktu = <title>
     Značka = <brand>`,
-    German: `Schreiben Sie einen eindeutigen SEO-Seitentitel mit einer maximalen Länge von 70 Zeichen. Sie haben die folgenden Informationen, die Sie in Ihren Text aufnehmen müssen:
+    German: `Schreiben Sie einen eindeutigen SEO-Seitentitel mit einer maximalen Länge von 70 Zeichen. Mehr als 70 Zeichen werden nicht akzeptiert, das ist wichtig.
+    Sie haben die folgenden Informationen, die Sie in Ihren Text aufnehmen müssen:
     Sprache = Deutsch
     Produkttitel = <title>
     Marke = <brand>`,
-    Finnish: `Kirjoita ainutlaatuinen SEO-sivun otsikko, jonka enimmäispituus on 70 merkkiä. Sen on osoitettava uskottavuutta ja saatava ihmiset haluamaan ostaa tuote, kun he näkevät otsikon. Se on kirjoitettava, jotta voin kopioida sen suoraan Shopify-taustajärjestelmään. Sinulla on seuraavat tiedot, jotka sinun on sisällytettävä tekstiisi:
+    Finnish: `Kirjoita ainutlaatuinen SEO-sivun otsikko, jonka enimmäispituus on vain 70 merkkiä. Yli 70 merkkiä ei hyväksytä, tämä on tärkeää.
+    Sinulla on seuraavat tiedot, jotka sinun on sisällytettävä tekstiisi:
     Kieli = suomi
     Tuotteen nimi = <title>
     Merkki = <brand>`,
-    Dutch: `Schrijf een unieke SEO-paginatitel met een maximale lengte van 70 tekens. Het moet geloofwaardigheid tonen en ervoor zorgen dat mensen het product willen kopen als ze de titel zien. Het moet worden geschreven zodat ik het rechtstreeks naar de Shopify-backend kan kopiëren. U heeft de volgende gegevens nodig die u in uw tekst moet opnemen:
+    Dutch: `Schrijf een unieke SEO-paginatitel met een maximale lengte van slechts 70 tekens. Meer dan 70 tekens worden niet geaccepteerd, dit is belangrijk.
+    U heeft de volgende gegevens nodig die u in uw tekst moet opnemen:
     Taal = Nederlands
     Producttitel = <title>
     Merk = <brand>`,
-    Norwegian: `Skriv en unik SEO-sidetittel med en maksimal lengde på 70 tegn. Det må vise troverdighet og gi folk lyst til å kjøpe produktet når de ser tittelen. Den må skrives slik at jeg kan kopiere den direkte til Shopify-backend. Du har følgende informasjon du må inkludere i teksten din:
+    Norwegian: `Skriv en unik SEO-sidetittel med en maksimal lengde på bare 70 tegn. Mer enn 70 tegn vil ikke bli akseptert, dette er viktig.
+    Du har følgende informasjon du må inkludere i teksten din:
     Språk = norsk
     Produkttittel = <title>
     Merke = <brand>`,
-    Polish: `Napisz unikalny tytuł strony SEO o maksymalnej długości 70 znaków. Musi wykazywać wiarygodność i sprawiać, że ludzie, którzy zobaczą tytuł, będą chcieli kupić produkt. Należy go zapisać, aby móc go skopiować bezpośrednio do zaplecza Shopify. Proszę o podanie tytułu w jednym wierszu. Masz następujące informacje, które musisz uwzględnić w swoim tekście:
+    Polish: `Napisz unikalny tytuł strony SEO o maksymalnej długości tylko 70 znaków. Więcej niż 70 znaków nie będzie akceptowanych, jest to ważne.
+    Masz następujące informacje, które musisz uwzględnić w swoim tekście:
     Język = polski
     Tytuł produktu = <title>
     Marka = <brand>`,
-    Swedish: `Skriv en unik SEO-sidatitel med en maximal längd på 70 tecken. Det måste visa trovärdighet och få folk att vilja köpa produkten när de ser titeln. Det måste skrivas så att jag kan kopiera det direkt till Shopifys backend. 
-    Snälla ge mig bara en rubrik på en rad. Du har följande information som du behöver inkludera i din text:
+    Swedish: `Skriv en unik SEO-sidatitel med en maximal längd på endast 70 tecken. Mer än 70 tecken accepteras inte, detta är viktigt.
+    Du har följande information som du behöver inkludera i din text:
     Språk = svenska
     Produkttitel = <title>
     Märke = <brand>`,
-    'England English': `Write a unique SEO page title with a maximum length of 70 characters. It must show credibility and make people want to buy the product when they see the title. It needs to be written so I can copy it directly into the Shopify backend. You have the following information you need to include in your text:
+    'England English': `Write a unique SEO page title with a maximum length of 70 characters only.More than 70 characters will not be accepted, this is important.
+    You have the following information you need to include in your text:
     Language = England english
     Product title = <title>
     Brand = <brand>`,
-    'American English': `Write a unique SEO page title with a maximum length of 70 characters. It must show credibility and make people want to buy the product when they see the title. It needs to be written so I can copy it directly into the Shopify backend. You have the following information you need to include in your text:
+    'American English': `Write a unique SEO page title with a maximum length of 70 characters only.More than 70 characters will not be accepted, this is important.
+    You have the following information you need to include in your text:
     Language = American english
     Product title = <title>
     Brand = <brand>`,
-    English: `Write a unique SEO page title with a maximum length of 70 characters. It must show credibility and make people want to buy the product when they see the title. It needs to be written so I can copy it directly into the Shopify backend.
+    English: `Write a unique SEO page title with a maximum length of 70 characters only.More than 70 characters will not be accepted, this is important. 
     You have the following information you need to include in your text:
     Language = English
     Product title = <title>
@@ -206,13 +204,13 @@ const productDescriptionPrompt = {
     1) Bare svar med HTML-en siden svaret ditt vil bli brukt direkte på et nettsted.
     2) Bruk samme språk (norsk)`,
     Polish: `Jesteś programistą HTML i chcesz przekonwertować opis produktu na HTML.
-    1) Po prostu odpowiedz, używając kodu HTML, ponieważ Twoja odpowiedź zostanie użyta bezpośrednio w witrynie.
+    1) Po prostu odpowiedz, używając kodu HTML, ponieważ Twoja odpowiedź zostanie użyta bezpośrednio w witrynie internetowej. Musi zaczynać się od <html> i kończyć na </html>.
     2) Użyj tego samego języka, jaki jest podany (polski)`,
     Swedish: `Du är html-utvecklare och behöver konvertera en produktbeskrivning till html.
     1) Svara bara med HTML-koden eftersom ditt svar kommer att användas direkt på en webbplats.
     2) Använd samma språk (svenska)`,
     'England English': `You are a html developer and need to convert a product description in html in England english.
-    1) Just answer with the HTML as your response will be used directly in a website.
+    1) Just answer with the HTML as your response will be used directly in a website. Must start with <html> and end with </html>. 
     2) Use the same language provided (England English)`,
     'American English': `You are a html developer and need to convert a product description in html in American english.
     1) Just answer with the HTML as your response will be used directly in a website.

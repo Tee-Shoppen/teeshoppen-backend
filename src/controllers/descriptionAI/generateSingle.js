@@ -1,5 +1,6 @@
 import openai from '../apis/chatgpt.js'
-import { subDomainMap } from '../utilities/shop-mapper.js'
+import { subDomainMap } from '../utilities/shop-mapper.js';
+import { ProductText } from '../../database/postgresdb.js';
 import { insertDescription, retrieveProductsforAISingle, createMetaField} from '../../database/queries.js'
 import { promptGpt4, productDescriptionPrompt, productHtmlPrompt , seoDescriptionPrompt, seoTitlePrompt} from '../utilities/aiHelper.js'
 import dotenv from "dotenv";
@@ -15,9 +16,9 @@ const descriptionPrompt = (language, product_title, vendor, tags) => {
   const prompt = productDescriptionPrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
-  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', '')
+  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', 'Unisex')
   else if (!vendor && gender) return prompt.replace('Brand = <brand>', '').replace('<gender>', gender)
-  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
+  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', 'Unisex')
 }
 
 const seoDescription = (language, product_title, vendor, tags) => {
@@ -28,9 +29,9 @@ const seoDescription = (language, product_title, vendor, tags) => {
   const prompt = seoDescriptionPrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
-  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', '')
+  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', 'Unisex')
   else if (!vendor && gender) return prompt.replace('Brand = <brand>', '').replace('<gender>', gender)
-  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
+  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', 'Unisex')
 }
 
 const seoTitle = (language, product_title, vendor, tags) => {
@@ -41,9 +42,9 @@ const seoTitle = (language, product_title, vendor, tags) => {
   const prompt = seoTitlePrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
-  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', '')
+  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', 'Unisex')
   else if (!vendor && gender) return prompt.replace('Brand = <brand>', '').replace('<gender>', gender)
-  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
+  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', 'Unisex')
 }
 
 const htmlPrompt = (language, description) => `${productHtmlPrompt[language]}\n\n${description}`
@@ -52,10 +53,10 @@ const htmlPrompt = (language, description) => `${productHtmlPrompt[language]}\n\
 
 const generateProductDescriptionSingle = async (id) => {
   // Retrieve products from database where description is null
-  const productsFound = await retrieveProductsforAISingle(id)
- if (productsFound.length === 0) return
+  // let id = req.params.id;
+  const product = await retrieveProductsforAISingle(id)
+ if (!product) return
   // For each product: Initialize items in Monday.com and Merge products with items
-  for (const product of productsFound) {
     if (!product.webshop) return
     let a = await ProductText.findOne({where : {product_id  :product.id}});
     if (a){
@@ -70,6 +71,8 @@ const generateProductDescriptionSingle = async (id) => {
      const aiDescription = await promptGpt4(openai, description)
      const aiseoDesc = await promptGpt4(openai, seoDesc)
      const aiTitle = await promptGpt4(openai, seoTit)
+     let aiTitleProcessed = aiTitle.replaceAll("\"", "");
+     console.log(seoTit);
   
      const html = htmlPrompt(language, aiDescription)
       let new_html = await promptGpt4(openai, html)
@@ -85,7 +88,7 @@ const generateProductDescriptionSingle = async (id) => {
       store: storeName,
       category: 'Products',
       new_description: new_description,
-      new_title : aiTitle,
+      new_title : aiTitleProcessed,
       new_seo_desc : aiseoDesc,
       created_at : new Date(),
       updated_at : new Date(),
@@ -100,7 +103,7 @@ const generateProductDescriptionSingle = async (id) => {
       title : product.title
     }
     await createMetaField(details);
-  }
+  
   // For each product: Generate description, Update description in shopify while updating status in Monday.com
   //const shopify = new Shopify(name, process.env[apiKey]!)
 

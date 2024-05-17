@@ -22,7 +22,7 @@ const shopifyWebhook = async (req, res, next) => {
       let mapped = await createProductModel(req);
       await insertProduct(mapped);
       await insertManyInventoryitems(mapped.inventory);
-      if(mapped.body_html.length > 500) {
+      if(mapped.body_html.length < 500) {
         await generateProductDescriptionSingle(product.id);
       }
       console.log("TRACE product/create webhook ends");

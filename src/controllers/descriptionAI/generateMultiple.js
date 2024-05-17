@@ -25,9 +25,9 @@ const descriptionPrompt = (language, product_title, vendor, tags, pID) => {
   const prompt = productDescriptionPrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
-  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', '')
+  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', 'Unisex')
   else if (!vendor && gender) return prompt.replace('Brand = <brand>', '').replace('<gender>', gender)
-  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
+  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', 'Unisex')
 }
 
 const seoDescription = (language, product_title, vendor, tags) => {
@@ -38,9 +38,9 @@ const seoDescription = (language, product_title, vendor, tags) => {
   const prompt = seoDescriptionPrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
-  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', '')
+  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', 'Unisex')
   else if (!vendor && gender) return prompt.replace('Brand = <brand>', '').replace('<gender>', gender)
-  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
+  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', 'Unisex')
 }
 
 const seoTitle = (language, product_title, vendor, tags) => {
@@ -51,9 +51,9 @@ const seoTitle = (language, product_title, vendor, tags) => {
   const prompt = seoTitlePrompt[language].replace('<title>', product_title)
 
   if (vendor && gender) return prompt.replace('<brand>', vendor).replace('<gender>', gender)
-  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', '')
+  else if (vendor && !gender) return prompt.replace('<brand>', vendor).replace('Gender = <gender>', 'Unisex')
   else if (!vendor && gender) return prompt.replace('Brand = <brand>', '').replace('<gender>', gender)
-  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', '')
+  else return prompt.replace('Brand = <brand>', '').replace('Gender = <gender>', 'Unisex')
 }
 
 const htmlPrompt = (language, description) => `${productHtmlPrompt[language]}\n\n${description}`
@@ -78,7 +78,7 @@ const generateProductDescription = async (req,res) => {
     let a = await ProductText.findOne({where : {product_id  :product.id}});
     if (a){
       console.log('Desc exists');
-      return;
+      continue
     }
     console.log('Generating for product ', product.id);
      const { name, storeName, language, apiKey } = subDomainMap(product.webshop);
