@@ -91,6 +91,7 @@ const generateProductDescription = async (req,res) => {
      const aiTitle = await promptGpt4(openai, seoTit)
      //console.log('aiDescription -----', aiDescription);
      let aiTitleProcessed = aiTitle.replaceAll("\"", "");
+     let aiseoDescProcessed = aiseoDesc.replaceAll("\"", "");
      const html = htmlPrompt(language, aiDescription)
       let new_html = await promptGpt4(openai, html)
       // if (!product.body_html) {
@@ -112,7 +113,7 @@ const generateProductDescription = async (req,res) => {
       category: 'Products',
       new_description: new_description,
       new_title : aiTitleProcessed,
-      new_seo_desc : aiseoDesc,
+      new_seo_desc : aiseoDescProcessed,
       created_at : new Date(),
       updated_at : new Date(),
       language : language
