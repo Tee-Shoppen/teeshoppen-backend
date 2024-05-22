@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import bodyParser from 'body-parser'
 import { catchAsync } from '../controllers/utilities/utils.js';
 import productCreation from '../controllers/products/create.js';
-import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct, retrieveProductUpdatedAt, updateMetaField, retrieveProductsforAI} from '../database/queries.js';
+import { retrieveManyProducts, retrieveProduct, retrieveVariant, updateProduct, retrieveProductUpdatedAt, updateMetaField, retrieveProductsforAI, updateBulkMetaField} from '../database/queries.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../controllers/products/swagger.json' assert { type: "json" };
 import express from 'express';
@@ -63,6 +63,7 @@ productsRouter.post('/update', verify,catchAsync(updateProduct));
 productsRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
 productsRouter.post('/generate-desc', verify, catchAsync(generateProductDescription));
 productsRouter.post('/update-desc/:id', verify, catchAsync(updateMetaField));
+productsRouter.post('/bulk-update-metafield', verify, catchAsync(updateBulkMetaField));
 productsRouter.post('/retrieve', verify, catchAsync(retrieveProductsforAI));
 
 //variants

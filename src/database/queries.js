@@ -191,6 +191,79 @@ const updateMetaField = async (req,res,next) => {
   }
 };
 
+// Function to update a productDesc
+const updateBulkMetaField = async (req,res,next) => {
+  try {
+    const products = await ProductText.findAll({ where: { status: 'Need to review' }});
+
+    console.log(products.length);
+    if(products.length < 1) return;
+
+    if(products.length > 0) {
+      res.sendStatus(200);
+    }
+
+    for await (var item of products) {
+      let product = item.dataValues;
+      const { name, apiKey } = subDomainMap(product.webshop)
+      const shopify = new Shopify(name, process.env[apiKey]);
+      const mainProduct = await Product.findOne({ where: { id: product.product_id }});
+
+      item.setDataValue('status', 'Done');
+      item.setDataValue('updated_at', new Date());
+      item.setDataValue('new_description', product.new_description);
+      item.setDataValue('new_title', product.new_title);
+      item.setDataValue('new_seo_desc', product.new_seo_desc);
+
+      // product.status = 'Done';
+      // product.updated_at = new Date();
+      // product.new_description = product.new_description;
+      // product.new_title = product.new_title;
+      // product.new_seo_desc = product.new_seo_desc;
+
+      await item.save().then(async() => {
+        // res.sendStatus(200);
+        const seoDescDetails = {
+          "metafield": {
+            "value": product.new_seo_desc
+          }
+        }
+        const seoTitleDetails = {
+          "metafield": {
+            "value": product.new_title
+          }
+        }
+  
+        mainProduct.body_html = product.new_description;
+        await mainProduct.save().then((saver) => {
+          console.log('SAVED in database');
+        })
+  
+        await shopify.updateProduct(product.product_id,{body_html :product.new_description});
+  
+        let ids = {};
+        ids = {
+          meta_id : product.meta_desc_id,
+          product_id : product.product_id
+        }
+        const b = await shopify.updateProductMetafield(ids,seoDescDetails);
+        ids = {
+          meta_id : product.meta_title_id,
+          product_id : product.product_id
+        }
+        const c= await shopify.updateProductMetafield(ids,seoTitleDetails);
+      
+      })
+
+      console.log('updateMetaField || Product has been updated in productText table and Shopify.');
+     
+    }
+     
+  } catch (error) {
+    console.error('Error running query:', error);
+  }
+};
+
 // NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert a variant
 const insertVariant = async (v) => {
@@ -1037,6 +1110,7 @@ export {
   retrieveManyCollections,
   updateProduct,
   updateMetaField,
+  updateBulkMetaField,
   updateVariant,
   updateOrCreateVariant,
   updateInventoryItem,
