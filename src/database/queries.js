@@ -194,7 +194,7 @@ const updateMetaField = async (req,res,next) => {
 // Function to update a productDesc
 const updateBulkMetaField = async (req,res,next) => {
   try {
-    const products = await ProductText.findAll({ where: { status: 'Need to review' }});
+    const products = await ProductText.findAll({ where: { status: 'Test' }});
 
     console.log(products.length);
     if(products.length < 1) return;
