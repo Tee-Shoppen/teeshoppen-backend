@@ -197,7 +197,10 @@ const updateBulkMetaField = async (req,res,next) => {
     const products = await ProductText.findAll({ where: { status: 'Test' }});
 
     console.log(products.length);
-    if(products.length < 1) return;
+    if(products.length < 1) {
+      res.sendStatus(200);
+      return;
+    }
 
     if(products.length > 0) {
       res.sendStatus(200);
