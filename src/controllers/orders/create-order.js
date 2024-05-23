@@ -41,9 +41,9 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
             'x-server': true,
           },
     }).then(async(res) => {
-      if(res){
-        console.log('--------------res', res.data.variant.id);
-      }
+      // if(res){
+      //   console.log('--------------res', res.data.variant.id);
+      // }
       returnObj.product_variant_id = res.data.variant.id;
       returnObj.product_variant_title = res.data.variant.title;
       returnObj.product_id = res.data.variant.product_id;
