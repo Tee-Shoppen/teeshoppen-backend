@@ -510,9 +510,14 @@ const retrieveProductsforAI = async (req, res, next) => {
   try{
     // Run query
     await Product.findAndCountAll({
-    where:  sequelize.where(sequelize.fn('length', sequelize.col('body_html')), {
+    where: {  
+      [Op.and]: [
+      sequelize.where(sequelize.fn('length', sequelize.col('body_html')), {
       [Op.lt]: 500,
     }),
+    { status: 'active' }
+   ]
+  },
     ...(attributes ? { attributes } : undefined),
     paranoid: false,
     raw: true,
