@@ -1,6 +1,7 @@
 //@ts-check
 import { InventoryItem, Product, Variant } from "../../database/postgresdb.js";
 import { updateInventoryItem } from "../../database/queries.js";
+import generateProductDescriptionSingle from "../descriptionAI/generateSingle.js";
 
 
 async function putProductIncludesVariants(incoming) {
@@ -15,8 +16,6 @@ async function putProductIncludesVariants(incoming) {
     //productId = await putProduct(incoming, t);
     let a = incoming;
     productId = await putProduct(incoming);
-    
-  
     if(productId){
       //await Promise.all(incoming.variants.map((v) => putVariant(v, incoming.images, productId, t)));
       await Promise.all(a.variants.map((v) => putVariant(v)));
@@ -38,7 +37,15 @@ async function putProduct(incomingProduct) {
 
   const product = await Product.findOne({ where: { id: incomingProduct.id } });
   if (product){
-    await product.update({ ...incomingProduct });
+    //check if the status is changing from draft to active
+    let oldStatus = product.getDataValue('status');
+    let incomingStatus = incomingProduct.status;
+   await product.update({ ...incomingProduct });
+   if ((oldStatus != 'active') && (incomingStatus == 'active') && (incomingProduct.body_html.length < 500)) {
+    //generate desc if all are true
+    await generateProductDescriptionSingle(incomingProduct.id);
+  }
+ 
     for (const inventoryItemMapped of incomingProduct.inventory) {
       await updateInventoryItem(inventoryItemMapped.id, inventoryItemMapped);
    }
