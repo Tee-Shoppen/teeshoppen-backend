@@ -8,6 +8,7 @@ import shopifyWebhook from "../controllers/orders/shopify-webhook.js";
 import express from 'express';
 import bodyParser from "body-parser";
 import fetchAllOrders from "../controllers/fetchAll/fetchAllOrders.js";
+import fetchAllOrdersSingleStore from "../controllers/fetchAll/fetchAllOrders-single.js";
 
 dotenv.config({ path: "./.env" });
 const ordersRouter = express.Router();
@@ -50,6 +51,7 @@ const verify = (req, res, next) => {
 //orders
 //fetchAll
 ordersRouter.get('/fetchAll', verify, catchAsync(fetchAllOrders));
+ordersRouter.get('/fetch-all-single-store', verify, catchAsync(fetchAllOrdersSingleStore));
 
 ordersRouter.get('/:id', verify, catchAsync(retrieveOrder));
 ordersRouter.post('/create', verify, catchAsync(orderCreation));
