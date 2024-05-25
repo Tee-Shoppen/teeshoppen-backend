@@ -1,11 +1,12 @@
 import initializeOrders from '../orders/initialize-orders.js';
       
 const fetchAllOrdersSingleStore = async (req,res,next) => {
-    if(!req.query.name) return;
+    if(!req.query) return;
     res.sendStatus(200);
-    console.log('fetching for ', store);
     let {name : store} = req.query
-    await initializeOrders(store);
+    let date = req.query.created_at_min;
+    console.log('fetching for ', store);
+    await initializeOrders(store,date);
 }
 
 export default fetchAllOrdersSingleStore;

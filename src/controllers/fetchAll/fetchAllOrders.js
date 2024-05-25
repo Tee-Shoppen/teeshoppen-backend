@@ -19,7 +19,7 @@ const fetchAllOrders = async (req,res,next) => {
     res.sendStatus(200);
     for (const store of stores){
         console.log('fetching for ', store);
-        await initializeOrders(store);
+        await initializeOrders(store,'');
     }
 }
 

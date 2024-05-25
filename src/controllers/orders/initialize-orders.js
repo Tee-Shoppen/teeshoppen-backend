@@ -66,7 +66,13 @@ async function initializeOrders(subDomain,date) {
   var d = new Date();
   // d.setMonth(d.getMonth() - 3);
   //let url = `${process.env.SHOPIFY_URL}/orders.json?status=any&created_at_min=${d}`;
-  let url = `https://${name}.myshopify.com/admin/api/2023-10/orders.json?status=any`;
+  let url;
+  if (date) {
+    url = `https://${name}.myshopify.com/admin/api/2023-10/orders.json?status=any&created_at_min=${date}`;
+  }
+  else{
+    url = `https://${name}.myshopify.com/admin/api/2023-10/orders.json?status=any`;
+  }
   let startTime = new Date();
   let nextLinkExist;
 
