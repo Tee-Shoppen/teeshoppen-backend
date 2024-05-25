@@ -39,6 +39,7 @@ async function handleCreateOrders(orders,webshop) {
         as: 'lineItems',
       },
       returning: true,
+      ignoreDuplicates: true
     }))
   .catch((err) => {
     console.log('initialize-orders', err.response?.data || err.stack || err.message || err.toString());
@@ -58,7 +59,7 @@ async function handleCreateOrders(orders,webshop) {
     
 }
 
-async function initializeOrders(subDomain) {
+async function initializeOrders(subDomain,date) {
 
   const { name, country, api } = domainInformation(subDomain)
 
