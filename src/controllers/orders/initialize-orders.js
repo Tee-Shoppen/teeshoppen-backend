@@ -37,6 +37,7 @@ async function handleCreateOrders(orders,webshop) {
       include: {
         model: OrderLineItem,
         as: 'lineItems',
+        ignoreDuplicates: true
       },
       returning: true,
       ignoreDuplicates: true
