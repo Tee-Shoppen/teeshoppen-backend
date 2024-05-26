@@ -942,9 +942,8 @@ async function updateCollection(c_id, rowToUpdate) {
 
 // Function to insert an order
 const insertOrder = async (o) => {
-  console.log(o[0])
   try{
-    Order.create(o[0],
+    Order.create(o,
       {
         include: [{
           model: OrderLineItem,
