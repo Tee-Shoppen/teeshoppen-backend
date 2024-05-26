@@ -67,7 +67,7 @@ const shopifyWebhook = async (req, res, next) => {
                     return;
                   }
                     // const model = await updateOrderModel(data);  old
-                    const [model] = await createOrderModel(data,webshop);
+                    const model = await createOrderModel(data,webshop);
                     //console.log(model)
                     // console.log('found resv',resV)
                     // resV.lineItems.order_line_item[0] = model.lineItems
