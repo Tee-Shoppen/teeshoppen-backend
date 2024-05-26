@@ -1,18 +1,18 @@
 import initializeOrders from '../orders/initialize-orders.js';
 
 const stores = [
-        'teeshoppen-pl',
-        'teeshoppen-cz',
-        'noodlefirm',
-        'teeshoppengermany',
-        'teeshoppen-finland',
+        // 'teeshoppen-pl',
+        // 'teeshoppen-cz',
+        // 'noodlefirm',
+        // 'teeshoppengermany',
+        // 'teeshoppen-finland',
         'teeshoppen-nl',
-        'teeshoppen-norway',
-        'teeshoppen-sweden',
-        'teeshoppen-uk',
-        'teeshoppen-com',
-        'test-teeshoppen',
-        'femalefashionstore-dk',
+        // 'teeshoppen-norway',
+        // 'teeshoppen-sweden',
+        // 'teeshoppen-uk',
+        // 'teeshoppen-com',
+        // 'test-teeshoppen',
+        // 'femalefashionstore-dk',
       ]
       
 const fetchAllOrders = async (req,res,next) => {
