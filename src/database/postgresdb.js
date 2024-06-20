@@ -223,6 +223,7 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         type: DataTypes.STRING,
         allowNull: true,
         },
+        costprice:DataTypes.STRING
     },  {
         schema: "products",
         underscored: true,
