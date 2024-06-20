@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
 // Import BigQuery module
-import { getBigQueryClient } from "./client.js";
+// import { getBigQueryClient } from "./client.js";
 dotenv.config({ path: "./.env" });
 // Create a BigQuery client instance
-const bigquery = getBigQueryClient();
+// const bigquery = getBigQueryClient();
 // Define the dataset ID
 const datasetId = process.env.BIGQUERY_DATASET_ID;
 import sequelize from "sequelize";
@@ -14,14 +14,14 @@ import { domainToSubDomain,subDomainMap } from "../controllers/utilities/shop-ma
 import Shopify from "../controllers/apis/shopify.js";
 
 // Define BigQuery tables
-const productsTable = bigquery.dataset(datasetId).table('products');
-const variantsTable = bigquery.dataset(datasetId).table('variants');
-const inventoryItemsTable = bigquery.dataset(datasetId).table('inventory_items');
-const collectionsTable = bigquery.dataset(datasetId).table('collections');
-const ordersTable = bigquery.dataset(datasetId).table('orders');
-const orderLineItemTable = bigquery.dataset(datasetId).table('order_line_items');
-const costPriceMonitoringTable = bigquery.dataset(datasetId).table('cost_price_monitoring');
-const productsTextTable = bigquery.dataset(datasetId).table('productText');
+// const productsTable = bigquery.dataset(datasetId).table('products');
+// const variantsTable = bigquery.dataset(datasetId).table('variants');
+// const inventoryItemsTable = bigquery.dataset(datasetId).table('inventory_items');
+// const collectionsTable = bigquery.dataset(datasetId).table('collections');
+// const ordersTable = bigquery.dataset(datasetId).table('orders');
+// const orderLineItemTable = bigquery.dataset(datasetId).table('order_line_items');
+// const costPriceMonitoringTable = bigquery.dataset(datasetId).table('cost_price_monitoring');
+// const productsTextTable = bigquery.dataset(datasetId).table('productText');
 
 // Function to insert a product
 const insertProduct = async (p) => {
@@ -399,11 +399,11 @@ const retrieveProduct = async (req, res, next) => {
     SELECT * FROM ${datasetId}.products where id=${req.params.id}`;
 
   try {
-    // Run the SQL query
-    const [rows] = await bigquery.query(query);
+  //   // Run the SQL query
+  //   const [rows] = await bigquery.query(query);
 
-  //    return product
-      res.send({product:rows});
+  // //    return product
+  //     res.send({product:rows});
 
   } catch (error) {
     console.error('Error running query:', error);
@@ -417,11 +417,11 @@ const retrieveProductUpdatedAt = async (req, res, next) => {
   SELECT updated_at FROM ${datasetId}.products where id=${req.params.id}`;
 try {
   // Run the SQL query
-  const [rows] = await bigquery.query(query);
-  let updatedAt = rows[0].updated_at? rows[0].updated_at.value : '';
+//   const [rows] = await bigquery.query(query);
+//   let updatedAt = rows[0].updated_at? rows[0].updated_at.value : '';
 
-//    return product
-    res.send({value:updatedAt});
+// //    return product
+//     res.send({value:updatedAt});
 
 } catch (error) {
   console.error('Error running query:', error);
@@ -465,10 +465,10 @@ const retrieveCollection = async (req,res,next)=> {
 
 try {
   // Run the SQL query
-  const [rows] = await bigquery.query(query);
+//   const [rows] = await bigquery.query(query);
 
-//    return collection
-    res.send({collection:rows});
+// //    return collection
+//     res.send({collection:rows});
 
 } catch (error) {
   console.error('Error running query:', error);
@@ -491,10 +491,10 @@ const retrieveManyProducts = async (req, res, next) => {
     `
   try {
     // Run the SQL query
-    const [rows] = await bigquery.query(query);
+//     const [rows] = await bigquery.query(query);
 
-//    return product
-      res.send({product:rows});
+// //    return product
+//       res.send({product:rows});
 
   } catch (error) {
     console.error('Error running query:', error);
@@ -624,10 +624,10 @@ const retrieveManyCollections = async (req,res,next) => {
 
   try {
     // Run the SQL query
-    const [rows] = await bigquery.query(query);
+  //   const [rows] = await bigquery.query(query);
 
-  //    return collections
-      res.send({collections:rows});
+  // //    return collections
+  //     res.send({collections:rows});
 
   } catch (error) {
     console.error('Error running query:', error);
@@ -706,7 +706,7 @@ async function updateProduct(p_id, rowToUpdate) {
           location: 'EU',
           params: parameters,
         };
-        const [queryResults] = await bigquery.query(options);
+        // const [queryResults] = await bigquery.query(options);
         // const [job] = await bigquery.createQueryJob(options);
         // console.log(`Job ${job.id} started.`);
 
@@ -794,7 +794,7 @@ async function updateOrCreateVariant(rowToUpdate) {
                 location: 'EU',
                 params: parameters,
               };
-              const [queryResults] = await bigquery.query(options);
+              // const [queryResults] = await bigquery.query(options);
               console.log(`Variant id ${variant.id} updated.`);
             } catch (error) {
               // console.log('updateSql', updateSql);
@@ -870,7 +870,7 @@ async function updateVariant(v_id, rowToUpdate) {
           location: 'EU',
           params: parameters,
         };
-        const [queryResults] = await bigquery.query(options);
+        // const [queryResults] = await bigquery.query(options);
         console.log(`Variant id ${v_id} updated.`);
       } catch (error) {
         console.error('Error during variant update:', error);
@@ -1021,10 +1021,10 @@ const retrieveOrder = async (req, res, next) => {
 
 try {
   // Run the SQL query
-  const [rows] = await bigquery.query(query);
+//   const [rows] = await bigquery.query(query);
 
-//    return order
-    res.send({order:rows});
+// //    return order
+//     res.send({order:rows});
 
 } catch (error) {
   console.error('Error running query:', error);
@@ -1039,10 +1039,158 @@ const retrieveManyOrders = async (req, res, next) => {
 
 try {
   // Run the SQL query
-  const [rows] = await bigquery.query(query);
+//   const [rows] = await bigquery.query(query);
 
-//    return product
-    res.send({orders:rows});
+// //    return product
+//     res.send({orders:rows});
+
+} catch (error) {
+  console.error('Error running query:', error);
+}
+}
+
+// Function to retrieve many orders
+const retrieveDelayedOrders = async (req, res, next) => {
+  try {
+    let now = new Date();
+  const delayedOrders = await Order.findAll(
+    { where: {
+      fulfillment_status: { [Op.is] : null},
+      created_at : {
+        [Op.and] : [
+          // { [Op.lte] : now },
+          { [Op.gte] : sequelize.literal("now() - INTERVAL '24 HOURS'") },
+        ]
+      }
+      // { fulfillment_status: { [Op.is] : null}},
+      // { created_at : {[Op.lte] : now}  }
+     },
+     attributes : [
+      'id',
+      'order_number',
+      [sequelize.fn('CONCAT', sequelize.col('customer_first_name'),' ',sequelize.col('customer_last_name')),'customer_name'],
+      'webshop',
+      'total_price',
+      'created_at'
+
+    ],
+     include: [{
+      model: OrderLineItem,
+      as: 'lineItems',
+      attributes : ['id','product_title','product_variant_id','product_id','price'],
+      // include: [{
+      //   model: Variant,
+      //   as: 'variants',
+      //   attributes : ['id','price','title','product_id'],
+      //   include: [{
+      //     model: Product,
+      //     as: 'product',
+      //     attributes : ['id','title','vendor','status'],
+      //   }],
+      // }],
+    }],
+    limit : 2
+  });
+  console.log(new Date());
+
+  // let variants = [];
+ 
+
+  if (delayedOrders.length < 1) return;
+  //  for await (var order of delayedOrders) {
+  //   // let orderObj = {};
+  //   // orderObj.ordNumber = order.order_number
+  //   let ctr = 0;
+  //     for await (var items of order.lineItems) {
+  //       variants.push(items.product_variant_id,orderObj);
+  //     }
+  //  }
+  let r = 0;
+  // await delayedOrders.map(async (order) => {
+  //   await order.lineItems.map(async(item) => {
+  //     //item.dataValues.b = "hee"
+  //     // product_variant_id
+  //     let products = [];
+  //     await Variant.findOne({
+  //     where : {
+  //       id : item.product_variant_id
+  //     },
+  //     attributes : ['id','price','title','product_id'],
+  //     include : [
+  //       {
+  //         model: Product,
+  //         as: 'product',
+  //         attributes : ['id','title','vendor','status']
+  //       }
+  //     ]
+  //   }).then(async(variant) => {
+  //     console.log('variant',variant.id)
+  //       await products.push(variant);
+  //   })
+  //    item.dataValues.b = 'hoy';
+  //   //await products.push(product);
+   
+  // })
+  // r++;
+  // console.log('r ', r);
+  // if (r == '2') {
+  //   res.send({orders:delayedOrders});
+  //  }
+  // })
+
+
+  for (let x = 0; x < delayedOrders.length; x++) {
+      for await (var item of delayedOrders[x].lineItems) {
+        let products = [];
+        await Variant.findOne({
+        where : {
+          id : item.product_variant_id
+        },
+        attributes : ['id','price','title','product_id','sku'],
+        include : [
+          {
+            model: Product,
+            as: 'product',
+            attributes : ['id','title','vendor','status']
+          }
+        ]
+      }).then(async(variant) => {
+        //console.log('variant',variant.id)
+        item.dataValues = {...item.dataValues, variant};
+          //await products.push(variant);
+      })
+    
+      
+      //await products.push(product);
+    }
+    //console.log('x ',x )
+      if (x == '1') {
+        res.send({orders:delayedOrders});
+      }
+  }
+
+//  console.log(delayedOrders);
+  // let products = [];
+  // for await (var variant of variants) {
+  //   let product = await Variant.findOne({
+  //     where : {
+  //       id : variant
+  //     },
+  //     attributes : ['id','price','title','product_id'],
+  //     include : [
+  //       {
+  //         model: Product,
+  //         as: 'product',
+  //         attributes : ['id','title','vendor','status']
+  //       }
+  //     ]
+  //   })
+  //   products.push(product);
+  // }
+  // res.send({products:products});
+
+
+ 
 
 } catch (error) {
   console.error('Error running query:', error);
@@ -1066,9 +1214,9 @@ const retrieveCostPrice = async (limit) => {
   try {
     const query = `SELECT * FROM '${productsTable}' WHERE condition LIMIT '${limit}';`;
     // Run the query
-    const [rows] = await bigquery.query(query);
-    // Return the resulting rows
-    return rows;
+    // const [rows] = await bigquery.query(query);
+    // // Return the resulting rows
+    // return rows;
   } catch (error) {
     console.error('Error executing SQL query:', error);
     throw error; // Re-throw the error for handling by the caller
@@ -1103,6 +1251,7 @@ export {
   insertManyOrderLineItems,
   retrieveOrder,
   retrieveManyOrders,
+  retrieveDelayedOrders,
   insertManyInventoryitems,
   insertManyCollections,
   retrieveProduct,

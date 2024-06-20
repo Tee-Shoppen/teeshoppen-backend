@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { catchAsync } from '../controllers/utilities/utils.js';
 import orderCreation from '../controllers/products/create.js';
-import {retrieveOrder } from '../database/queries.js';
+import {retrieveOrder, retrieveDelayedOrders } from '../database/queries.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../controllers/products/swagger.json' assert { type: "json" };
 import shopifyWebhook from "../controllers/orders/shopify-webhook.js";
@@ -9,6 +9,7 @@ import express from 'express';
 import bodyParser from "body-parser";
 import fetchAllOrders from "../controllers/fetchAll/fetchAllOrders.js";
 import fetchAllOrdersSingleStore from "../controllers/fetchAll/fetchAllOrders-single.js";
+import getDelayed from "../controllers/orders/get-delayed.js";
 
 dotenv.config({ path: "./.env" });
 const ordersRouter = express.Router();
@@ -52,8 +53,9 @@ const verify = (req, res, next) => {
 //fetchAll
 ordersRouter.get('/fetchAll', verify, catchAsync(fetchAllOrders));
 ordersRouter.get('/fetch-all-single-store', verify, catchAsync(fetchAllOrdersSingleStore));
-
+ordersRouter.get('/get-delayed', verify, catchAsync(retrieveDelayedOrders));
 ordersRouter.get('/:id', verify, catchAsync(retrieveOrder));
+
 ordersRouter.post('/create', verify, catchAsync(orderCreation));
 ordersRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
 

@@ -461,6 +461,8 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
     // Define foreign key relationship
     Order.hasMany(OrderLineItem, { as: 'lineItems', foreignKey: { name: 'order_id', allowNull: false } });
     OrderLineItem.belongsTo(Order, { as: 'order', foreignKey: { name: 'order_id', allowNull: false } });
+    
+    //OrderLineItem.hasMany(Variant, { as: 'variants', foreignKey: { name: 'variant_id', allowNull: false } });
 
     ProductText.belongsTo(Product, {as: "product", foreignKey: 'productId', allowNull: false });
     Variant.belongsTo(Product, {as: "product", foreignKey: { name: "productId", allowNull: false },});
@@ -662,4 +664,52 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         // Additional options like schema name, timestamps, etc. can be added here
       });
       
-      
+  export const Status = sequelize.define('status', {
+        id: {
+          type: DataTypes.STRING,
+          primaryKey: true,
+          allowNull: false,
+        },
+        name: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+      }, {
+        // Additional options like schema name, timestamps, etc. can be added here
+      });
+  
+  export const User = sequelize.define('user', {
+        id: {
+          type: DataTypes.STRING,
+          primaryKey: true,
+          allowNull: false,
+        },
+        email: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        password: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        position: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+      }, {
+        // Additional options like schema name, timestamps, etc. can be added here
+      });
+
+  export const Role = sequelize.define('role', {
+        id: {
+          type: DataTypes.STRING,
+          primaryKey: true,
+          allowNull: false,
+        },
+        name: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        }
+      }, {
+        // Additional options like schema name, timestamps, etc. can be added here
+      });

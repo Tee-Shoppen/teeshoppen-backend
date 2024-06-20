@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import productsRouter from './routes/products.js';
 import collectionsRouter from './routes/collection.js';
 import BigQueryMigration from './database/migration.js';
-import { getBigQueryClient } from './database/client.js';
 import ordersRouter from './routes/order.js';
 import {sequelize} from './database/postgresdb.js';
 import { Umzug, SequelizeStorage } from 'umzug';
