@@ -94,6 +94,7 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
       type: DataTypes.STRING,
       allowNull: true,
     },
+    cost_price: DataTypes.STRING,
   }, {
     schema: "products",
     underscored: true,
@@ -222,8 +223,7 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
         admin_graphql_api_id: {
         type: DataTypes.STRING,
         allowNull: true,
-        },
-        costprice:DataTypes.STRING
+        }
     },  {
         schema: "products",
         underscored: true,

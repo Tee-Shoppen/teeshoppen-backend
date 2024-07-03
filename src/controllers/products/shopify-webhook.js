@@ -22,9 +22,10 @@ const shopifyWebhook = async (req, res, next) => {
       let mapped = await createProductModel(req);
       await insertProduct(mapped);
       await insertManyInventoryitems(mapped.inventory);
-      if((mapped.body_html.length < 500) && (mapped.status == 'active')) {
-        await generateProductDescriptionSingle(product.id);
-      }
+      
+      // if((mapped.body_html.length < 500) && (mapped.status == 'active')) {
+      //   await generateProductDescriptionSingle(product.id);
+      // } -- REMOVED, worked done by MAKE.COM
       console.log("TRACE product/create webhook ends");
       return;
       

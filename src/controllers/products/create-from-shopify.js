@@ -1,41 +1,85 @@
 import { domainToSubDomain,subDomainMap } from '../utilities/shop-mapper.js'
-import Shopify from '../apis/shopify.js'
+import Shopify from '../apis/shopify.js';
+import axios from 'axios';
+
+
+  async function getCostPrice(details, inventoryId) {
+    let store = details.webshop;
+    let key = details.api;
   
+   // console.log(details);
+  
+    let url = `https://${store}.myshopify.com/admin/api/2024-04/inventory_items.json?ids=${inventoryId}`;
+  
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'X-Shopify-Access-Token': key,
+        },
+      });
+  
+      //console.log(response.data.inventory_items[0]);
+      let costprice = response.data.inventory_items[0].cost;
+     // console.log(costprice);
+      return costprice; // Return the costprice here
+    } catch (err) {
+      console.log(err);
+      return null; // Return a default value or handle the error appropriately
+    }
+  }
+
   async function createProductModel(req)  {
     const { body: product } = req
     const { 'x-shopify-shop-domain': domain } = req.headers
     const domainInformation = subDomainMap(domainToSubDomain(domain))
     const webshop = domainInformation.name
+    const { [domainInformation.apiKey] : apiKey } = process.env
+    let details = {
+      webshop : webshop,
+      api : apiKey
+    }
 
-    const variantsMapped = await Promise.all(product.variants.map(async(variant) => ({
-        webshop,
-        product_id: product.id,
-        id: variant.id,
-        title: variant.title,
-        created_at: new Date(variant.created_at),
-        updated_at: new Date(variant.updated_at),
-        last_ordered_at: new Date(),
-        admin_graphql_api_id: variant.admin_graphql_api_id,
-        price: variant.price,
-        sku: variant.sku,
-        position: variant.position,
-        compare_at_price: variant.compare_at_price,
-        fulfillment_service: variant.fulfillment_service,
-        inventory_management: variant.inventory_management,
-        option1: variant.option1,
-        option2: variant.option2,
-        option3: variant.option3,
-        taxable: variant.taxable,
-        barcode: variant.barcode,
-        grams: variant.grams,
-        image_id: variant.image_id,
-        weight: variant.weight,
-        weight_unit: variant.weight_unit,
-        inventory_item_id: variant.inventory_item_id,
-        inventory_quantity: variant.inventory_quantity,
-        old_inventory_quantity: variant.old_inventory_quantity,
-        requires_shipping: variant.requires_shipping,
-      })))
+    async function getVariantsMapped(product, details, webshop) {
+      const variantsMapped = await Promise.all(product.variants.map(async (variant) => {
+        const cost_price = await getCostPrice(details, variant.inventory_item_id);
+        console.log('cost_price',cost_price);
+        
+        return {
+          webshop,
+          cost_price,
+          product_id: product.id,
+          id: variant.id,
+          title: variant.title,
+          created_at: new Date(variant.created_at),
+          updated_at: new Date(variant.updated_at),
+          last_ordered_at: new Date(),
+          admin_graphql_api_id: variant.admin_graphql_api_id,
+          price: variant.price,
+          sku: variant.sku,
+          position: variant.position,
+          compare_at_price: variant.compare_at_price,
+          fulfillment_service: variant.fulfillment_service,
+          inventory_management: variant.inventory_management,
+          option1: variant.option1,
+          option2: variant.option2,
+          option3: variant.option3,
+          taxable: variant.taxable,
+          barcode: variant.barcode,
+          grams: variant.grams,
+          image_id: variant.image_id,
+          weight: variant.weight,
+          weight_unit: variant.weight_unit,
+          inventory_item_id: variant.inventory_item_id,
+          inventory_quantity: variant.inventory_quantity,
+          old_inventory_quantity: variant.old_inventory_quantity,
+          requires_shipping: variant.requires_shipping,
+        };
+      }));
+      
+      return variantsMapped;
+    }
+
+    let variantsMapped = await getVariantsMapped(product, details, webshop);
 
       const shopify = new Shopify(domainInformation.name, process.env[domainInformation.apiKey])
       const { inventory_items } = (
@@ -81,6 +125,9 @@ import Shopify from '../apis/shopify.js'
     };
    
    productModel.variants = await variantsMapped;
+   console.log(variantsMapped);
+   
+   //productModel.variants = await getVariantsMapped(product, details, webshop);
    productModel.inventory = await inventoryItemsMapped
    
     
