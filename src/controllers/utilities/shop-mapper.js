@@ -11,6 +11,8 @@ const country = {
   'teeshoppen-com': 'United States',
   'test-teeshoppen': 'Test Country',
   'femalefashionstore-dk': 'Denmark',
+  'itsmay-markets' : 'United States',
+  'engros-teeshoppen': 'Denmark'
 }
 
 const language = {
@@ -26,6 +28,8 @@ const language = {
   'teeshoppen-com': 'American English',
   'test-teeshoppen': 'English',
   'femalefashionstore-dk': 'Danish',
+  'engros-teeshoppen' : 'Danish',
+  'itsmay-markets' : 'English',
 }
 
 const storeName = {
@@ -41,6 +45,8 @@ const storeName = {
   'teeshoppen-com': 'Teeshoppen - United States',
   'test-teeshoppen': 'Teeshoppen - Test Country',
   'femalefashionstore-dk': 'Itsmay - Denmark',
+  'itsmay-markets' : 'Itsmay - United States',
+  'engros-teeshoppen' : 'Teeshoppen - Engros'
 }
 
 const subDomainMap = (subDomain) => {
