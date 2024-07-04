@@ -22,7 +22,7 @@ import axios from 'axios';
      // console.log(costprice);
       return costprice; // Return the costprice here
     } catch (err) {
-      console.log(err);
+      console.log('Error getting cost price for inventory item id', inventoryId);
       return null; // Return a default value or handle the error appropriately
     }
   }
