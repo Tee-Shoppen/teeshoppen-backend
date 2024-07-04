@@ -25,6 +25,7 @@ async function getCostPrice(details,inventoryId) {
 
 async function bulkRefetch(req, res, next) {
     console.log('PRODUCT REFETCH STARTING');
+    res.sendStatus(200);
     const returnMessage = {};
     let nextPageUrl = null;
     let hasNextPage = false;
@@ -129,8 +130,8 @@ async function bulkRefetch(req, res, next) {
     //console.log('Loop has finished'); // Log when the loop is finished
     returnMessage['message'] = 'Products bulk fetch done';
     console.log('returnMessage:', returnMessage); // Log the return message
-    res.status(200).json({ returnMessage });
-    next();
+    // res.status(200).json({ returnMessage });
+    // next();
 }
 
 function sleep(ms) {
