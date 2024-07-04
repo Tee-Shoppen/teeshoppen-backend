@@ -2,7 +2,6 @@ import { domainToSubDomain,subDomainMap } from '../utilities/shop-mapper.js'
 import Shopify from '../apis/shopify.js';
 import axios from 'axios';
 
-
   async function getCostPrice(details, inventoryId) {
     let store = details.webshop;
     let key = details.api;
@@ -30,6 +29,7 @@ import axios from 'axios';
 
   async function createProductModel(req)  {
     const { body: product } = req
+
     const { 'x-shopify-shop-domain': domain } = req.headers
     const domainInformation = subDomainMap(domainToSubDomain(domain))
     const webshop = domainInformation.name
@@ -42,7 +42,7 @@ import axios from 'axios';
     async function getVariantsMapped(product, details, webshop) {
       const variantsMapped = await Promise.all(product.variants.map(async (variant) => {
         const cost_price = await getCostPrice(details, variant.inventory_item_id);
-        console.log('cost_price',cost_price);
+        // console.log('cost_price',cost_price);
         
         return {
           webshop,
@@ -125,7 +125,7 @@ import axios from 'axios';
     };
    
    productModel.variants = await variantsMapped;
-   console.log(variantsMapped);
+  //  console.log(variantsMapped);
    
    //productModel.variants = await getVariantsMapped(product, details, webshop);
    productModel.inventory = await inventoryItemsMapped

@@ -9,6 +9,8 @@ import express from 'express';
 import shopifyWebhook from "../controllers/products/shopify-webhook.js";
 import fetchAllProducts from "../controllers/fetchAll/fetchAllProducts.js";
 import generateProductDescription from "../controllers/descriptionAI/generateMultiple.js";
+import bulkRefetch from "../controllers/products/bulkRefetch.js";
+import bulkRefetchByDate from "../controllers/products/bulkRefetch-by-date.js";
 
 dotenv.config({ path: "./.env" });
 const productsRouter = express.Router();
@@ -53,6 +55,8 @@ const verify = (req, res, next) => {
 
 //fetchall
 productsRouter.get('/fetchAll', verify,catchAsync(fetchAllProducts));
+productsRouter.get('/bulkRefetch', verify,catchAsync(bulkRefetch));
+productsRouter.get('/bulk-fetch-by-date', verify,catchAsync(bulkRefetchByDate));
 productsRouter.get('/', verify,catchAsync(retrieveManyProducts));
 productsRouter.get('/:id', verify, catchAsync(retrieveProduct));
 productsRouter.get('/updated/:id', verify, catchAsync(retrieveProductUpdatedAt));
