@@ -7,8 +7,6 @@ async function getCostPrice(details,inventoryId) {
     let store = details.webshop;
     let key = details.api;
     const url = `https://${store}.myshopify.com/admin/api/2024-04/inventory_items.json?ids=${inventoryId}`;
-
-
     try {
         const response = await axios.get(url, {
             headers: {
@@ -19,7 +17,7 @@ async function getCostPrice(details,inventoryId) {
         const costprice = response.data.inventory_items[0].cost;
         return costprice;
     } catch (err) {
-        console.log(err);
+        console.log('Error getting cost price for inventory item id', inventoryId);
         return null;
     }
 }
