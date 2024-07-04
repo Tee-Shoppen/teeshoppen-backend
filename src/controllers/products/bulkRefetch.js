@@ -18,7 +18,7 @@ async function getCostPrice(details,inventoryId) {
         const costprice = response.data.inventory_items[0].cost;
         return costprice;
     } catch (err) {
-        console.log(err);
+        console.log('Error getting cost price for inventory item id', inventoryId);
         return null;
     }
 }
