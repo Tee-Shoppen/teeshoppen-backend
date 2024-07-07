@@ -47,7 +47,7 @@ async function bulkRefetch(req, res, next) {
                 }
             });
 
-            const header = { 'x-shopify-shop-domain': 'teeshoppen-uk' };
+            const header = { 'x-shopify-shop-domain': webshop };
             response.headers = { ...response.headers, ...header };
             const products = response.data.products;
             console.log(`BULK FETCH, Processing ${products.length} products...`);
@@ -77,6 +77,7 @@ async function bulkRefetch(req, res, next) {
                 } else {
                     console.log('Product found. Updating product ' + product.id);
                     p.created_at = productModel.created_at;
+                    p.webshop = productModel.webshop;
                     p.save();
                     const variants = await Variant.findAll({
                         where: { productId: p.id },

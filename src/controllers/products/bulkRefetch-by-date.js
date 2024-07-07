@@ -80,6 +80,7 @@ async function bulkRefetchByDate(req, res, next) {
                     console.log('Product found. Updating product ' + product.id);
                     p.setDataValue('createdAt', productModel.created_at);
                     p.setDataValue('updatedAt', productModel.updated_at);
+                    p.webshop = productModel.webshop;
                     p.save();
                     const variants = await Variant.findAll({
                         where: { productId: p.id },
