@@ -14,7 +14,7 @@ async function getCostPrice(details,inventoryId) {
             },
         });
 
-        const costprice = response.data.inventory_items[0].cost;
+        const costprice = await response.data.inventory_items[0].cost;
         return costprice;
     } catch (err) {
         console.log('Error getting cost price for inventory item id', inventoryId);
@@ -49,7 +49,7 @@ async function bulkRefetchByDate(req, res, next) {
                 }
             });
 
-            const header = { 'x-shopify-shop-domain': 'teeshoppen-uk' };
+            const header = { 'x-shopify-shop-domain': webshop };
             response.headers = { ...response.headers, ...header };
             const products = response.data.products;
             console.log(`BULK FETCH, Processing ${products.length} products...`);
