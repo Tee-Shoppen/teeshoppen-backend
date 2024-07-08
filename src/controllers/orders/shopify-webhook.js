@@ -6,6 +6,7 @@ import { Order, OrderLineItem } from "../../database/postgresdb.js";
 import createOrderModel from "./create-order.js";
 import { insertOrder } from "../../database/queries.js";
 import { domainToSubDomain, subDomainMap } from "../utilities/shop-mapper.js";
+import axios from "axios";
 
 const shopifyWebhook = async (req, res, next) => {
   const { 'x-shopify-topic': topic } = req.headers
@@ -20,6 +21,7 @@ const shopifyWebhook = async (req, res, next) => {
       console.log("TRACE orders/create webhook starts");
      // console.log("TRACE create new product", data);
       res.sendStatus(200);
+      let ord = data.id;
       console.log('data.id', data.id);
             try {
 
@@ -29,14 +31,29 @@ const shopifyWebhook = async (req, res, next) => {
                     console.log('Order already exists');
                     return;
                   }
-                   
             })
                 // Run the SQL query
                 console.log('CREATING Order..')
                 let mapped = await createOrderModel(data,webshop);
-                console.log(mapped);
+                // console.log(mapped);
                 await insertOrder(mapped);
                 console.log("TRACE order/create webhook ends");
+                //trigger webhook
+                const webhookUrl = 'https://hook.eu1.make.com/jcc3nyoa2jmm7wyep9lkj1nz3cqdi79m';
+                const orderDetails = {
+                  orderId: ord 
+                };
+                try {
+                  const response = await axios.post(webhookUrl, orderDetails, {
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  });
+              
+                  console.log('Response from Make.com:', response.data);
+                } catch (error) {
+                  console.error('Error triggering Make.com scenario:', error);
+                }
                 return;
           
             } catch (error) {
