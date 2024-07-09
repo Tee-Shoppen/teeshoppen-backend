@@ -69,10 +69,10 @@ async function initializeOrders(subDomain,date) {
   //let url = `${process.env.SHOPIFY_URL}/orders.json?status=any&created_at_min=${d}`;
   let url;
   if (date) {
-    url = `https://${name}.myshopify.com/admin/api/2023-10/orders.json?status=any&created_at_min=${date}`;
+    url = `https://${name}.myshopify.com/admin/api/2024-04/orders.json?status=any&created_at_min=${date}`;
   }
   else{
-    url = `https://${name}.myshopify.com/admin/api/2023-10/orders.json?status=any`;
+    url = `https://${name}.myshopify.com/admin/api/2024-04/orders.json?status=any`;
   }
   let startTime = new Date();
   let nextLinkExist;

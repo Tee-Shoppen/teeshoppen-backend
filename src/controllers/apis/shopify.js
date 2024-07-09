@@ -4,7 +4,7 @@ export default class Shopify extends Apis {
   subdomain
   constructor(subDomain, apiKey) {
     super({
-      baseURL: `https://${subDomain}.myshopify.com/admin/api/2023-10`,
+      baseURL: `https://${subDomain}.myshopify.com/admin/api/2024-04`,
       headers: {
         'Content-Type': 'application/json',
         'X-Shopify-Access-Token': apiKey,
