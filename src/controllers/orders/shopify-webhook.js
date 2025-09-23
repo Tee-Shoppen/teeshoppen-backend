@@ -35,7 +35,7 @@ const shopifyWebhook = async (req, res, next) => {
                 // Run the SQL query
                 console.log('CREATING Order..')
                 let mapped = await createOrderModel(data,webshop);
-                console.log("////////////////////////////-----tags----------",mapped.tags);
+                console.log("////////////////////////////-----tags----------",mapped);
                 await insertOrder(mapped);
                 console.log("TRACE order/create webhook ends");
                 //trigger webhook
