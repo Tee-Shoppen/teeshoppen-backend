@@ -146,6 +146,8 @@ async function createOrderModel(iincoming,webshop) {
   if (order.source = 'shopify') {
     order_source = 'shopify'
   }
+
+  console.log('******************order tag-------------', order.tags);
   
    //check if there is a fulfillment
    let fulfillmentId = null
