@@ -2,6 +2,7 @@
 import dotenv from "dotenv";
 import bodyParser from 'body-parser';
 import orderCreation from "./create.js";
+import { Op } from 'sequelize';
 import { Order, OrderLineItem } from "../../database/postgresdb.js";
 import createOrderModel from "./create-order.js";
 import { insertOrder } from "../../database/queries.js";
