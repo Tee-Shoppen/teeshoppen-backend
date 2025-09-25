@@ -17,51 +17,92 @@ const shopifyWebhook = async (req, res, next) => {
 
 
   switch (topic) {
+    // case 'orders/create': {
+    //   console.log("TRACE orders/create webhook starts");
+    //  // console.log("TRACE create new product", data);
+    //   res.sendStatus(200);
+    //   let ord = data.id;
+    //   console.log('data.id', data.id);
+    //         try {
+
+    //             await Order.findOne({ where : {id : data.id}})
+    //             .then((isOrder) => {
+    //               if(isOrder) {
+    //                 console.log('Order already exists');
+    //                 return;
+    //               }
+    //         })
+    //             // Run the SQL query
+    //             console.log('CREATING Order..')
+    //             let mapped = await createOrderModel(data,webshop);
+    //             console.log("////////////////////////////-----tags----------",mapped);
+    //             await insertOrder(mapped);
+    //             console.log("TRACE order/create webhook ends");
+    //             //trigger webhook
+    //             const webhookUrl = 'https://hook.eu1.make.com/jcc3nyoa2jmm7wyep9lkj1nz3cqdi79m';
+    //             const orderDetails = {
+    //               orderId: ord 
+    //             };
+    //             try {
+    //               const response = await axios.post(webhookUrl, orderDetails, {
+    //                 headers: {
+    //                   'Content-Type': 'application/json',
+    //                 },
+    //               });
+              
+    //               console.log('Response from Make.com:', response.data);
+    //             } catch (error) {
+    //               console.error('Error triggering Make.com scenario:', error);
+    //             }
+    //             return;
+          
+    //         } catch (error) {
+    //             console.error('shopify-webhook/orders/create - Error running query:', error);
+    //             return;
+    //         }
+       
+    // }
     case 'orders/create': {
       console.log("TRACE orders/create webhook starts");
-     // console.log("TRACE create new product", data);
       res.sendStatus(200);
       let ord = data.id;
       console.log('data.id', data.id);
-            try {
 
-                await Order.findOne({ where : {id : data.id}})
-                .then((isOrder) => {
-                  if(isOrder) {
-                    console.log('Order already exists');
-                    return;
-                  }
-            })
-                // Run the SQL query
-                console.log('CREATING Order..')
-                let mapped = await createOrderModel(data,webshop);
-                console.log("////////////////////////////-----tags----------",mapped);
-                await insertOrder(mapped);
-                console.log("TRACE order/create webhook ends");
-                //trigger webhook
-                const webhookUrl = 'https://hook.eu1.make.com/jcc3nyoa2jmm7wyep9lkj1nz3cqdi79m';
-                const orderDetails = {
-                  orderId: ord 
-                };
-                try {
-                  const response = await axios.post(webhookUrl, orderDetails, {
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                  });
-              
-                  console.log('Response from Make.com:', response.data);
-                } catch (error) {
-                  console.error('Error triggering Make.com scenario:', error);
-                }
-                return;
-          
-            } catch (error) {
-                console.error('shopify-webhook/orders/create - Error running query:', error);
-                return;
-            }
-       
+      try {
+        // ✅ check if order already exists
+        const existingOrder = await Order.findOne({ where: { id: data.id } });
+        if (existingOrder) {
+          console.log('Order already exists, skipping insert.');
+          return; // ✅ this exits the whole handler
+        }
+
+        // Run the SQL query
+        console.log('CREATING Order..');
+        let mapped = await createOrderModel(data, webshop);
+        console.log("////////////////////////////-----tags----------", mapped);
+        await insertOrder(mapped);
+        console.log("TRACE order/create webhook ends");
+
+        // trigger webhook
+        const webhookUrl = 'https://hook.eu1.make.com/jcc3nyoa2jmm7wyep9lkj1nz3cqdi79m';
+        const orderDetails = { orderId: ord };
+
+        try {
+          const response = await axios.post(webhookUrl, orderDetails, {
+            headers: { 'Content-Type': 'application/json' },
+          });
+          console.log('Response from Make.com:', response.data);
+        } catch (error) {
+          console.error('Error triggering Make.com scenario:', error);
+        }
+
+        return;
+      } catch (error) {
+        console.error('shopify-webhook/orders/create - Error running query:', error);
+        return;
+      }
     }
+
     // case 'orders/updated': {
     //   console.log("TRACE orders/update webhook starts");
     //   res.sendStatus(200);
