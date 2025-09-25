@@ -146,109 +146,83 @@ const shopifyWebhook = async (req, res, next) => {
     //   }
 
     case 'orders/updated': {
-      console.log("TRACE orders/update webhook starts");
-      res.sendStatus(200);
+    console.log("TRACE orders/update webhook starts");
+    res.sendStatus(200);
 
-      try {
-        // Find the order by Shopify id
-        const resOrder = await Order.findOne({
-          where: { id: req.body.id },
-          include: [
-            {
-              model: OrderLineItem,
-              as: 'lineItems',
-            },
-          ],
-        });
+    try {
+      // Find the order by Shopify id
+      const resOrder = await Order.findOne({
+        where: { id: req.body.id },
+        include: [
+          {
+            model: OrderLineItem,
+            as: 'lineItems',
+          },
+        ],
+      });
 
-        if (!resOrder) {
-          console.log('shopify-webhook/orders/update || orders/update cannot find id');
-          return;
-        }
-
-        // Build new order model from Shopify payload
-        const model = await createOrderModel(req.body, webshop);
-
-        // Handle missing address fields
-        if (resOrder.billingAddressLineTwo && !model.billingAddressLineTwo) {
-          model.billingAddressLineTwo = "";
-        }
-        if (resOrder.addressLineTwo && !model.addressLineTwo) {
-          model.addressLineTwo = "";
-        }
-
-        // Helper: only allow specific line item fields to be updated
-        const pickLineItemFields = (li) => ({
-          order_id: resOrder.id,
-          title: li.title,
-          quantity: li.quantity,
-          price: li.price,
-          sku: li.sku,
-          variant_id: li.variant_id,
-          grams: li.grams,
-          taxable: li.taxable,
-          // add more safe fields if needed
-        });
-
-        await Order.sequelize.transaction(async (t) => {
-          // 1) Update the order itself (exclude id)
-          await resOrder.update(
-            {
-              email: model.email,
-              phone: model.phone,
-              financialStatus: model.financialStatus,
-              fulfillmentStatus: model.fulfillmentStatus,
-              currency: model.currency,
-              subtotalPrice: model.subtotalPrice,
-              totalPrice: model.totalPrice,
-              shippingAddress: model.shippingAddress,
-              billingAddress: model.billingAddress,
-              addressLineTwo: model.addressLineTwo,
-              billingAddressLineTwo: model.billingAddressLineTwo,
-              // whitelist other fields you allow to update
-            },
-            { transaction: t }
-          );
-
-          // 2) Sync line items
-          const incoming = Array.isArray(model.lineItems) ? model.lineItems : [];
-          const keepIds = new Set(incoming.map((li) => li.id)); // assumes Shopify line_item.id is your PK
-
-          for (const li of incoming) {
-            const existing = await OrderLineItem.findOne({
-              where: { id: li.id },
-              transaction: t,
-            });
-
-            if (existing) {
-              await existing.update(pickLineItemFields(li), { transaction: t });
-            } else {
-              await OrderLineItem.create(
-                { id: li.id, ...pickLineItemFields(li) },
-                { transaction: t }
-              );
-            }
-          }
-
-          // 3) Delete any stale line items (no PK mutation)
-          await OrderLineItem.destroy({
-            where: {
-              order_id: resOrder.id,
-              id: { [Op.notIn]: Array.from(keepIds) },
-            },
-            transaction: t,
-          });
-        });
-
-        console.log("TRACE order/update webhook ends");
-        return;
-      } catch (error) {
-        console.error('shopify-webhook/orders/update - Error running query:', error);
+      if (!resOrder) {
+        console.log('shopify-webhook/orders/update || orders/update cannot find id');
         return;
       }
-  }
- 
 
+      // Build new order model from Shopify payload
+      const model = await createOrderModel(req.body, webshop);
+
+      // Handle missing address fields
+      if (resOrder.billingAddressLineTwo && !model.billingAddressLineTwo) {
+        model.billingAddressLineTwo = "";
+      }
+      if (resOrder.addressLineTwo && !model.addressLineTwo) {
+        model.addressLineTwo = "";
+      }
+
+      await Order.sequelize.transaction(async (t) => {
+        // 1) Update the order itself (exclude id)
+        const { id: orderId, ...orderDataWithoutId } = model;
+        await resOrder.update(orderDataWithoutId, { transaction: t });
+
+        // 2) Sync line items
+        const incoming = Array.isArray(model.lineItems) ? model.lineItems : [];
+        const keepIds = new Set(incoming.map((li) => li.id));
+
+        for (const li of incoming) {
+          const existing = await OrderLineItem.findOne({
+            where: { id: li.id },
+            transaction: t,
+          });
+
+          const { id, ...dataWithoutId } = li;
+
+          if (existing) {
+            // update all fields except id
+            await existing.update({ ...dataWithoutId, order_id: resOrder.id }, { transaction: t });
+          } else {
+            // create new with id + other fields
+            await OrderLineItem.create(
+              { id, ...dataWithoutId, order_id: resOrder.id },
+              { transaction: t }
+            );
+          }
+        }
+
+        // 3) Delete any stale line items (not in payload)
+        await OrderLineItem.destroy({
+          where: {
+            order_id: resOrder.id,
+            id: { [Op.notIn]: Array.from(keepIds) },
+          },
+          transaction: t,
+        });
+      });
+
+      console.log("TRACE order/update webhook ends");
+      return;
+    } catch (error) {
+      console.error('shopify-webhook/orders/update - Error running query:', error);
+      return;
+    }
+  }
 
     default:
     console.log('shopify-webhook', `Unexpected topic ${topic}`, 2);
