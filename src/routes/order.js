@@ -10,6 +10,7 @@ import bodyParser from "body-parser";
 import fetchAllOrders from "../controllers/fetchAll/fetchAllOrders.js";
 import fetchAllOrdersSingleStore from "../controllers/fetchAll/fetchAllOrders-single.js";
 import getDelayed from "../controllers/orders/get-delayed.js";
+import backfillOrders from '../controllers/orders/backfill-orders.js';
 
 dotenv.config({ path: "./.env" });
 const ordersRouter = express.Router();
@@ -58,5 +59,8 @@ ordersRouter.get('/:id', verify, catchAsync(retrieveOrder));
 
 ordersRouter.post('/create', verify, catchAsync(orderCreation));
 ordersRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
+
+// 🔧 ONE-TIME ORDER BACKFILL
+ordersRouter.get('/backfill-orders', verify, backfillOrders);
 
 export default ordersRouter;
