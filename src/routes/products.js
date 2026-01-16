@@ -11,6 +11,7 @@ import fetchAllProducts from "../controllers/fetchAll/fetchAllProducts.js";
 import generateProductDescription from "../controllers/descriptionAI/generateMultiple.js";
 import bulkRefetch from "../controllers/products/bulkRefetch.js";
 import bulkRefetchByDate from "../controllers/products/bulkRefetch-by-date.js";
+import backfillCostPrice from '../controllers/products/backfill-cost-price.js';
 
 dotenv.config({ path: "./.env" });
 const productsRouter = express.Router();
@@ -57,6 +58,7 @@ const verify = (req, res, next) => {
 productsRouter.get('/fetchAll', verify,catchAsync(fetchAllProducts));
 productsRouter.get('/bulkRefetch', verify,catchAsync(bulkRefetch));
 productsRouter.get('/bulk-fetch-by-date', verify,catchAsync(bulkRefetchByDate));
+productsRouter.get('/backfill-cost-price', verify, backfillCostPrice);
 productsRouter.get('/', verify,catchAsync(retrieveManyProducts));
 productsRouter.get('/:id', verify, catchAsync(retrieveProduct));
 productsRouter.get('/updated/:id', verify, catchAsync(retrieveProductUpdatedAt));
