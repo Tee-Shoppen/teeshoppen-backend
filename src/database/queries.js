@@ -942,28 +942,28 @@ async function updateCollection(c_id, rowToUpdate) {
 
 // Function to insert an order
 const insertOrder = async (o) => {
-  try{
-    Order.create(o,
-      {
-        include: [{
+  try {
+    const resV = await Order.create(o, {
+      include: [
+        {
           model: OrderLineItem,
           as: 'lineItems',
-        }],
-        returning: true,
-      }
-    ).then((resV) => {
-      console.log('shopify-webhook/orders/create || Created orders successfully');
-      console.log("TRACE order/create webhook ends in order.create()");
-    })
-    .catch((err) => {
-      console.log('shopify-webhook/order/create', err.response?.data || err.stack || err.message || err.toString());
-      console.log('errrrr', err);
+        },
+      ],
+      returning: true,
     });
-  } catch (error) {
-    console.error('Error inserting order:', JSON.stringify(error));
-    throw error; // Re-throw the error for handling by the caller
+
+    console.log('shopify-webhook/orders/create || Created order successfully');
+    return resV;
+  } catch (err) {
+    console.error(
+      'shopify-webhook/orders/create FAILED',
+      err.response?.data || err.stack || err.message || err.toString()
+    );
+    throw err; // IMPORTANT: let caller handle failure
   }
 };
+
 
 // NOTE : DO NOT USE THIS FUNCTION (BIGQUERY CODE)
 // Function to insert an order line item
