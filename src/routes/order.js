@@ -11,6 +11,7 @@ import fetchAllOrders from "../controllers/fetchAll/fetchAllOrders.js";
 import fetchAllOrdersSingleStore from "../controllers/fetchAll/fetchAllOrders-single.js";
 import getDelayed from "../controllers/orders/get-delayed.js";
 import backfillOrders from '../controllers/orders/backfill-orders.js';
+import backfillSingleOrder from '../controllers/orders/backfill-single-order.js';
 
 dotenv.config({ path: "./.env" });
 const ordersRouter = express.Router();
@@ -56,6 +57,7 @@ ordersRouter.get('/fetchAll', verify, catchAsync(fetchAllOrders));
 ordersRouter.get('/fetch-all-single-store', verify, catchAsync(fetchAllOrdersSingleStore));
 // 🔧 ONE-TIME ORDER BACKFILL
 ordersRouter.get('/backfill-orders', verify, backfillOrders);
+ordersRouter.get('/backfill-single-order', verify, backfillSingleOrder);
 
 ordersRouter.get('/get-delayed', verify, catchAsync(retrieveDelayedOrders));
 ordersRouter.get('/:id', verify, catchAsync(retrieveOrder));
