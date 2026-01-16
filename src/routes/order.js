@@ -54,13 +54,13 @@ const verify = (req, res, next) => {
 //fetchAll
 ordersRouter.get('/fetchAll', verify, catchAsync(fetchAllOrders));
 ordersRouter.get('/fetch-all-single-store', verify, catchAsync(fetchAllOrdersSingleStore));
+// 🔧 ONE-TIME ORDER BACKFILL
+ordersRouter.get('/backfill-orders', verify, backfillOrders);
+
 ordersRouter.get('/get-delayed', verify, catchAsync(retrieveDelayedOrders));
 ordersRouter.get('/:id', verify, catchAsync(retrieveOrder));
 
 ordersRouter.post('/create', verify, catchAsync(orderCreation));
 ordersRouter.post('/shopify-webhook', catchAsync(shopifyWebhook));
-
-// 🔧 ONE-TIME ORDER BACKFILL
-ordersRouter.get('/backfill-orders', verify, backfillOrders);
 
 export default ordersRouter;
