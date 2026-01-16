@@ -15,7 +15,7 @@ const backfillSingleOrder = async (req, res) => {
   if (!store) return res.status(400).json({ error: 'store is required' });
   if (!orderId) return res.status(400).json({ error: 'orderId is required' });
 
-  // respond immediately to avoid request timeout
+  // respond immediately (avoid heroku timeout)
   res.status(202).json({ message: 'Single order backfill started', store, orderId });
 
   try {
@@ -24,28 +24,27 @@ const backfillSingleOrder = async (req, res) => {
     const apiKey = process.env[domainInfo.apiKey];
     if (!apiKey) throw new Error(`Missing API key env var for ${store}`);
 
-    // 1) Fetch the order from Shopify (by id)
+    // 1) Fetch order from Shopify
     const url = `https://${webshop}.myshopify.com/admin/api/2024-04/orders/${orderId}.json`;
-
     const { data } = await axios.get(url, {
       headers: { 'X-Shopify-Access-Token': apiKey },
-      params: { status: 'any' }, // allow closed/cancelled etc
+      params: { status: 'any' },
     });
 
     const shopifyOrder = data?.order;
     if (!shopifyOrder?.id) {
-      console.log('[single_order_backfill] no order in response', { store, orderId });
+      console.log('[single_order_backfill] Shopify returned no order', { store, orderId });
       return;
     }
 
-    // 2) Map to your DB model
+    // 2) Map Shopify payload to DB model
     const mapped = await createOrderModel(shopifyOrder, webshop);
 
-    // 3) Upsert into DB in a transaction
+    // 3) Upsert inside transaction
     await sequelize.transaction(async (t) => {
+      // ✅ lock ONLY the order row (no include => no LEFT JOIN => no postgres error)
       const existing = await Order.findOne({
         where: { id: mapped.id },
-        include: [{ model: OrderLineItem, as: 'lineItems' }],
         transaction: t,
         lock: t.LOCK.UPDATE,
       });
@@ -60,11 +59,11 @@ const backfillSingleOrder = async (req, res) => {
         return;
       }
 
-      // Update order fields (never update PK)
+      // Update order (exclude id + lineItems)
       const { id, lineItems, ...orderWithoutId } = mapped;
       await existing.update(orderWithoutId, { transaction: t });
 
-      // Sync line items (upsert + delete stale)
+      // Sync line items
       const incoming = Array.isArray(mapped.lineItems) ? mapped.lineItems : [];
       const keepIds = new Set(incoming.map((li) => li.id));
 
@@ -72,7 +71,8 @@ const backfillSingleOrder = async (req, res) => {
         const found = await OrderLineItem.findOne({
           where: { id: li.id },
           transaction: t,
-          lock: t.LOCK.UPDATE,
+          // no lock needed here usually; but safe if you want:
+          // lock: t.LOCK.UPDATE,
         });
 
         const { id: liId, ...liWithoutId } = li;
@@ -90,6 +90,7 @@ const backfillSingleOrder = async (req, res) => {
         }
       }
 
+      // Delete stale line items
       await OrderLineItem.destroy({
         where: {
           order_id: existing.id,
