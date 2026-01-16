@@ -8,10 +8,12 @@ const { Op } = sql;
 
 async function fetchCostsForInventoryIds({ webshop, apiKey, inventoryIds }) {
   const url = `https://${webshop}.myshopify.com/admin/api/2024-04/inventory_items.json`;
+
   const { data } = await axios.get(url, {
     headers: { 'X-Shopify-Access-Token': apiKey },
     params: { ids: inventoryIds.join(',') },
   });
+
   // Map inventory_item_id -> cost
   const map = new Map();
   for (const item of data.inventory_items || []) {
@@ -62,36 +64,70 @@ const backfillCostPrice = async (req, res) => {
       raw: true,
     });
 
-    console.log(`[cost_backfill] ${webshop}: found ${variants.length} variants missing cost_price`);
+    console.log(
+      `[cost_backfill] ${webshop}: found ${variants.length} variants missing cost_price`
+    );
 
-    const invIds = variants.map((v) => Number(v.inventory_item_id)).filter(Boolean);
-    const invChunks = chunk(invIds, 100); // Shopify supports ids= list; keep it reasonable
+    // De-dupe inventory ids (important)
+    const invIdsUnique = [
+      ...new Set(
+        variants
+          .map((v) => Number(v.inventory_item_id))
+          .filter((n) => Number.isFinite(n) && n > 0)
+      ),
+    ];
+
+    console.log(
+      `[cost_backfill] ${webshop}: unique inventory_item_ids = ${invIdsUnique.length}`
+    );
+
+    const invChunks = chunk(invIdsUnique, 100);
 
     let updated = 0;
+    let shopifyNullCost = 0;
+    let notReturnedByShopify = 0;
 
     for (const idsChunk of invChunks) {
-      const costMap = await fetchCostsForInventoryIds({ webshop, apiKey, inventoryIds: idsChunk });
+      const costMap = await fetchCostsForInventoryIds({
+        webshop,
+        apiKey,
+        inventoryIds: idsChunk,
+      });
 
-      for (const v of variants) {
+      // Only process variants that belong to this chunk
+      const variantsInChunk = variants.filter((v) =>
+        idsChunk.includes(Number(v.inventory_item_id))
+      );
+
+      for (const v of variantsInChunk) {
         const invId = Number(v.inventory_item_id);
-        if (!costMap.has(invId)) continue;
+
+        if (!costMap.has(invId)) {
+          notReturnedByShopify += 1;
+          continue;
+        }
 
         const cost = costMap.get(invId);
-        if (cost === null || cost === undefined) continue;
+        if (cost == null) {
+          shopifyNullCost += 1;
+          continue;
+        }
 
-        await Variant.update(
+        const [count] = await Variant.update(
           { cost_price: cost },
           { where: { id: v.id } }
         );
 
-        updated += 1;
+        updated += count;
       }
 
       // be nice to Shopify rate limits
       await sleep(300);
     }
 
-    console.log(`[cost_backfill] ${webshop}: updated cost_price for ${updated} variants`);
+    console.log(
+      `[cost_backfill] ${webshop}: updated=${updated}, shopify_null_cost=${shopifyNullCost}, not_returned=${notReturnedByShopify}`
+    );
   } catch (err) {
     console.error('[cost_backfill] failed', err);
   }
