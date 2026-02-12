@@ -291,6 +291,10 @@ export const sequelize = new Sequelize(`postgres://${process.env.PSQL_USER}:${pr
     fulfillment_status: DataTypes.STRING,
     weight: DataTypes.DOUBLE,
     weight_unit: DataTypes.STRING,
+    sku: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     status: {
       type: DataTypes.STRING,
       allowNull: false,
