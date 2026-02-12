@@ -567,6 +567,11 @@ export default {
         "required": false
       },
       {
+        "name": "sku",
+        "type": "STRING",
+        "required": false
+      },
+      {
         "name": "productVariantTitle",
         "type": "STRING",
         "required": false

@@ -31,6 +31,7 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
   const returnObj = {
     status,
     fulfillmentStatus,
+    sku: lineItem.sku || null,
   };
 
   if (lineItem.product_exists) {
@@ -47,6 +48,7 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
       returnObj.product_variant_id = res.data.variant.id;
       returnObj.product_variant_title = res.data.variant.title;
       returnObj.product_id = res.data.variant.product_id;
+      returnObj.sku = returnObj.sku || res.data.variant.sku || null;
      
     }).catch((err) =>{
       console.log(`no value!!!, ERROR variant id ${lineItem.variant_id}`)
