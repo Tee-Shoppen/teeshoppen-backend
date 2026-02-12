@@ -27,9 +27,6 @@ export const createShippingLine =  (shippingLine, orderCreated, orderUpdated, or
 };
 
 export const createLineItem = async (lineItem, orderCreated, orderUpdated, currency, orderStatus, orderFinancialStatus, order, refunds, discountApps, discountCodes) => {
-  console.log('================ LINE ITEM RAW =================');
-  console.log(JSON.stringify(lineItem, null, 2));
-  console.log('===============================================');
   const [status, fulfillmentStatus] = mapShopifyResponseToWareLineItemStatuses(lineItem.fulfillment_status, orderStatus);
   const returnObj = {
     status,
@@ -60,12 +57,15 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
     returnObj.id=lineItem.id
     returnObj.product_title = lineItem.title;
     returnObj.order_id=order.id
+    returnObj.sku = lineItem.sku;
 
   } else {
     console.log("create-from-shopify, PRODUCT DOES NOT EXIST in DB,Order id : ",order.id + 'variant id ', lineItem.variant_id);
     returnObj.id=lineItem.id
     returnObj.product_title = lineItem.title;
     returnObj.order_id=order.id
+    returnObj.sku = lineItem.sku;
+
     // await createCustomProduct(lineItem, order).then((res) => {
     //   returnObj.productVariantId = res.data.product.variants[0].id;
     //   returnObj.productVariantTitle = res.data.product.variants[0].title;
@@ -138,7 +138,7 @@ export const createLineItem = async (lineItem, orderCreated, orderUpdated, curre
     returnObj.status = orderStatus;
     return [returnObj, null];
   }
-  if ('productVariantId' in returnObj && orderFinancialStatus === 'paid') {
+  if ('product_variant_id' in returnObj && orderFinancialStatus === 'paid') {
     if (returnObj.status === "received") returnObj.status = "pending purchase";
     return [returnObj, returnObj.product_variant_dd];
   }
@@ -280,7 +280,7 @@ async function createOrderModel(iincoming,webshop) {
   // const refunds_array_lineItem = refundss_array.flatMap(l => l.line_item_id)
 
   const result = await Promise.all(order.line_items.map((lineItem) => (
-    createLineItem(lineItem, order.created_at, order.updated_at, order.currency, orderModel.status, orderModel.financialStatus, orderModel,refundss_array, discountApps, discountCodes)
+    createLineItem(lineItem, order.created_at, order.updated_at, order.currency, orderModel.status, orderModel.financial_status, orderModel,refundss_array, discountApps, discountCodes)
   )));
 
   const lineItems = [];
