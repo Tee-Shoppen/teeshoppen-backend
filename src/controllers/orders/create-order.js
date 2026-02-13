@@ -27,9 +27,6 @@ export const createShippingLine =  (shippingLine, orderCreated, orderUpdated, or
 };
 
 export const createLineItem = async (lineItem, orderCreated, orderUpdated, currency, orderStatus, orderFinancialStatus, order, refunds, discountApps, discountCodes) => {
-    console.log('================ LINE ITEM RAW =================');
-  console.log(JSON.stringify(lineItem, null, 2));
-  console.log('===============================================');
   const [status, fulfillmentStatus] = mapShopifyResponseToWareLineItemStatuses(lineItem.fulfillment_status, orderStatus);
   const returnObj = {
     status,
