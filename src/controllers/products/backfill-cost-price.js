@@ -63,6 +63,8 @@ const backfillCostPrice = async (req, res) => {
       where: {
         webshop,
         [Op.or]: [{ cost_price: null }, { cost_price: 0 }],
+        // NEW: Ignore items without SKUs
+      sku: { [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: '' }] }
       },
       attributes: ['id', 'inventory_item_id'],
       limit,
