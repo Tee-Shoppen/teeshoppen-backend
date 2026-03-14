@@ -19,6 +19,7 @@ const backfillSingleOrder = async (req, res) => {
     const domainInfo = subDomainMap(store);
     const webshop = domainInfo.name;
     const apiKey = process.env[domainInfo.apiKey];
+    console.log('key', process.env[domainInfo.apiKey])
     if (!apiKey) throw new Error(`Missing API key env var for ${store}`);
 
     // ✅ fetch from Shopify
